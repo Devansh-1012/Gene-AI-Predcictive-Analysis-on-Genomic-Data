@@ -1,0 +1,337 @@
+[
+  {
+    "timestamp": "2026-03-24 18:54:05",
+    "event": "LOGIN_FAILED",
+    "username": "admin",
+    "note": "Wrong password"
+  },
+  {
+    "timestamp": "2026-03-25 08:25:55",
+    "event": "LOGIN_FAILED",
+    "username": "admin",
+    "note": "Wrong password",
+    "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-03-25 08:26:58",
+    "event": "REGISTER",
+    "username": "admin1",
+    "note": "",
+    "ip": "unknown"
+  },
+  {
+    "timestamp": "2026-03-25 08:27:08",
+    "event": "LOGIN_SUCCESS",
+    "username": "admin1",
+    "note": "",
+    "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-03-25 08:31:02",
+    "event": "PASSWORD_RESET",
+    "username": "admin1",
+    "note": "",
+    "ip": "unknown"
+  },
+  {
+    "timestamp": "2026-03-25 08:31:25",
+    "event": "LOGIN_SUCCESS",
+    "username": "admin1",
+    "note": "",
+    "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-03-25 08:44:43",
+    "event": "PASSWORD_RESET",
+    "username": "admin",
+    "note": "",
+    "ip": "unknown"
+  },
+  {
+    "timestamp": "2026-03-25 08:48:40",
+    "event": "PASSWORD_RESET",
+    "username": "admin",
+    "note": "",
+    "ip": "unknown"
+  },
+  {
+    "timestamp": "2026-03-25 08:53:55",
+    "event": "LOGIN_SUCCESS",
+    "username": "admin",
+    "note": "",
+    "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-03-25 09:00:35",
+    "event": "LOGOUT",
+    "username": "admin",
+    "note": "",
+    "ip": "unknown"
+  },
+  {
+    "timestamp": "2026-03-25 09:06:22",
+    "event": "REGISTER",
+    "username": "Chaitanya",
+    "note": "",
+    "ip": "unknown"
+  },
+  {
+    "timestamp": "2026-03-25 09:06:31",
+    "event": "LOGIN_SUCCESS",
+    "username": "Chaitanya",
+    "note": "",
+    "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-03-25 09:42:04",
+    "event": "LOGIN_SUCCESS",
+    "username": "Chaitanya",
+    "note": "",
+    "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-03-25 09:42:06",
+    "event": "LOGOUT",
+    "username": "Chaitanya",
+    "note": "",
+    "ip": "unknown"
+  },
+  {
+    "timestamp": "2026-03-25 09:42:09",
+    "event": "LOGIN_SUCCESS",
+    "username": "Chaitanya",
+    "note": "",
+    "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-03-25 09:42:19",
+    "event": "LOGOUT",
+    "username": "Chaitanya",
+    "note": "",
+    "ip": "unknown"
+  },
+  {
+    "timestamp": "2026-03-25 09:42:46",
+    "event": "LOGIN_SUCCESS",
+    "username": "admin",
+    "note": "",
+    "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-03-25 10:11:32",
+    "event": "LOGIN_SUCCESS",
+    "username": "admin",
+    "note": "",
+    "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-03-25 10:11:43",
+    "event": "ADMIN_PIN_OK",
+    "username": "admin",
+    "note": "PIN verified successfully",
+    "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-03-25 10:11:59",
+    "event": "PIN_CHANGED",
+    "username": "admin",
+    "note": "",
+    "ip": "unknown"
+  },
+  {
+    "timestamp": "2026-03-25 10:12:25",
+    "event": "PIN_CHANGED",
+    "username": "admin",
+    "note": "",
+    "ip": "unknown"
+  },
+  {
+    "timestamp": "2026-03-25 10:12:32",
+    "event": "PIN_CHANGED",
+    "username": "admin",
+    "note": "",
+    "ip": "unknown"
+  },
+  {
+    "timestamp": "2026-03-25 10:13:05",
+    "event": "USER_DELETED",
+    "username": "admin1",
+    "note": "Deleted by admin",
+    "ip": "unknown"
+  },
+  {
+    "timestamp": "2026-03-25 10:13:13",
+    "event": "USER_DELETED",
+    "username": "DEVANSH",
+    "note": "Deleted by admin",
+    "ip": "unknown"
+  },
+  {
+    "timestamp": "2026-03-25 10:13:17",
+    "event": "USER_DELETED",
+    "username": "Devansh",
+    "note": "Deleted by admin",
+    "ip": "unknown"
+  },
+  {
+    "timestamp": "2026-03-25 10:13:33",
+    "event": "LOGOUT",
+    "username": "admin",
+    "note": "",
+    "ip": "unknown"
+  },
+  {
+    "timestamp": "2026-03-25 10:13:36",
+    "event": "LOGIN_SUCCESS",
+    "username": "Chaitanya",
+    "note": "",
+    "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-03-25 10:13:41",
+    "event": "LOGOUT",
+    "username": "Chaitanya",
+    "note": "",
+    "ip": "unknown"
+  },
+  {
+    "timestamp": "2026-03-25 11:35:16",
+    "event": "LOGIN_SUCCESS",
+    "username": "Chaitanya",
+    "note": "",
+    "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-03-25 11:35:22",
+    "event": "LOGOUT",
+    "username": "Chaitanya",
+    "note": "",
+    "ip": "unknown"
+  },
+  {
+    "timestamp": "2026-03-25 11:35:56",
+    "event": "LOGIN_SUCCESS",
+    "username": "admin",
+    "note": "",
+    "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-03-25 11:36:05",
+    "event": "ADMIN_PIN_OK",
+    "username": "admin",
+    "note": "PIN verified successfully",
+    "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-03-27 12:11:00",
+    "event": "LOGOUT",
+    "username": "admin",
+    "note": "",
+    "ip": "unknown"
+  },
+  {
+    "timestamp": "2026-03-27 12:36:17",
+    "event": "LOGIN_SUCCESS",
+    "username": "Chaitanya",
+    "note": "",
+    "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-03-27 12:36:22",
+    "event": "LOGOUT",
+    "username": "Chaitanya",
+    "note": "",
+    "ip": "unknown"
+  },
+  {
+    "timestamp": "2026-03-27 12:36:46",
+    "event": "LOGIN_SUCCESS",
+    "username": "admin",
+    "note": "",
+    "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-03-27 12:36:49",
+    "event": "ADMIN_PIN_OK",
+    "username": "admin",
+    "note": "PIN verified successfully",
+    "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-03-27 13:04:47",
+    "event": "LOGOUT",
+    "username": "admin",
+    "note": "",
+    "ip": "unknown"
+  },
+  {
+    "timestamp": "2026-03-27 13:36:56",
+    "event": "LOGIN_SUCCESS",
+    "username": "admin",
+    "note": "",
+    "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-03-27 13:37:00",
+    "event": "ADMIN_PIN_OK",
+    "username": "admin",
+    "note": "PIN verified successfully",
+    "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-03-27 13:38:37",
+    "event": "LOGOUT",
+    "username": "admin",
+    "note": "",
+    "ip": "unknown"
+  },
+  {
+    "timestamp": "2026-03-28 14:05:44",
+    "event": "LOGIN_SUCCESS",
+    "username": "Chaitanya",
+    "note": "",
+    "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-03-28 14:05:59",
+    "event": "LOGOUT",
+    "username": "Chaitanya",
+    "note": "",
+    "ip": "unknown"
+  },
+  {
+    "timestamp": "2026-03-28 14:06:23",
+    "event": "LOGIN_SUCCESS",
+    "username": "admin",
+    "note": "",
+    "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-03-28 14:06:26",
+    "event": "ADMIN_PIN_OK",
+    "username": "admin",
+    "note": "PIN verified successfully",
+    "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-04-29 13:07:02",
+    "event": "LOGIN_SUCCESS",
+    "username": "Deva",
+    "note": "",
+    "ip": "127.0.0.1"
+  },
+  {
+    "timestamp": "2026-05-14 00:06:13",
+    "event": "REGISTER",
+    "username": "DKR",
+    "note": "",
+    "ip": "unknown"
+  },
+  {
+    "timestamp": "2026-05-14 00:06:20",
+    "event": "LOGIN_SUCCESS",
+    "username": "DKR",
+    "note": "",
+    "ip": "127.0.0.1"
+  }
+]

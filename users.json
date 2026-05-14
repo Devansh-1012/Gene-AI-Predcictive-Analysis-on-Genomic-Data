@@ -1,0 +1,35 @@
+{
+  "admin": {
+    "password": "scrypt:32768:8:1$Qa3Q8RrcjvHRiBLE$8b2cc59fe7b287a4e2a122225594459b578cfb71bf97fa5a44af437f5e18c1cfa7cba910f9efa89721c6506694c862111ecb85d2944efbe9a2cdc29dad2f0f57",
+    "security_question": "What is the admin secret word?",
+    "security_answer": "scrypt:32768:8:1$placeholder$0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "registered_at": "2024-01-01 00:00:00",
+    "failed_attempts": 0,
+    "locked_until": null,
+    "admin_pin": "scrypt:32768:8:1$H7umR4EEcIe5cIcq$898208e483203348c446020341b1a3b09c31fb5bf04aa8308e022bce0536f08baf3fc3d7083962cbbcc9701b7bb11bcc3addf317fa8217c002d66dce7ddd0c79"
+  },
+  "Deva": {
+    "password": "scrypt:32768:8:1$idEpFGN2dYqimGvp$4ed19816c48ff5fb9db1f831268b6f7c1ba58c38b7c2744d1628efe166972fa1344ed034063f2079a121974f9c05daa55b05ccc23422662c774b47becc5e7f19",
+    "security_question": "What was the name of your first pet?",
+    "security_answer": "scrypt:32768:8:1$placeholder$0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "registered_at": "2024-01-01 00:00:00",
+    "failed_attempts": 0,
+    "locked_until": null
+  },
+  "Chaitanya": {
+    "password": "scrypt:32768:8:1$WDXv3PIPGxNZt0ay$58de8cb5cd7d994e6a0caa714290f31582cfd8ff94e0d2cda38fa85c34ab30628139f20aaf93d0b741b377f807baf08719d5eaef5b11ec090ce7040773ac75f5",
+    "security_question": "What is the name of your favourite childhood friend?",
+    "security_answer": "scrypt:32768:8:1$aZodiGBy2Kk0tL43$118e48d48b2354ff49f01f3b8b0a90466bc7eb6501faa98aa1fbb711d5111a513039f38c68667d1c2182d0b8c61f7144988d96f9a95aa1c7ed4818b7c8751660",
+    "registered_at": "2026-03-25 09:06:22",
+    "failed_attempts": 0,
+    "locked_until": null
+  },
+  "DKR": {
+    "password": "scrypt:32768:8:1$eUzHerpHCyYABBh0$e9c5c4539d3f1baa12e76e069f8194b04e37162ff2fbe4d56cee8238c8be1297ebde58bc407a712f827b0a7c3d1a97fc3c607edc524a6d868666624d3d2e966a",
+    "security_question": "What was the name of your first pet?",
+    "security_answer": "scrypt:32768:8:1$llhWsEQRzXNpeteh$3caf75c38441175659f10caac115885cacd769f89fe3d158ad130a61375e02d1df8cc74c19385dcaed858f021767ec8300a6043bcbbf8936afea29a1d5046902",
+    "registered_at": "2026-05-14 00:06:13",
+    "failed_attempts": 0,
+    "locked_until": null
+  }
+}
