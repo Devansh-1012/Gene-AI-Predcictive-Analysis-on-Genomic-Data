@@ -1,0 +1,9 @@
+# 9. MINIMAL SNPs - Test with few SNPs
+echo "📄 Creating minimal_snps.txt (Expected: Limited Analysis)..."
+cat > minimal_snps.txt << 'EOF'
+rs7903146	TT
+rs429358	CC
+rs10757274	GG
+rs9939609	AA
+rs80357382	GG
+EOF

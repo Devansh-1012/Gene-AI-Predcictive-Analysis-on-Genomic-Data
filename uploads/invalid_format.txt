@@ -1,0 +1,11 @@
+# 10. INVALID FORMAT - Test error handling
+echo "📄 Creating invalid_format.txt (Expected: Error Handling)..."
+cat > invalid_format.txt << 'EOF'
+# This file has invalid format
+invalid_snp	XX
+not_a_snp	YY
+--	--
+rs7903146
+missing_genotype
+rs429358	INVALID_GENOTYPE
+EOF
