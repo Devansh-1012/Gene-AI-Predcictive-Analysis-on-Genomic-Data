@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GenoRisk AI — Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+
+        .dna-animation {
+            background: linear-gradient(-45deg, #1e3a8a, #3b82f6, #8b5cf6, #ec4899, #f59e0b);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+        @keyframes gradientShift {
+            0%   { background-position: 0% 50%; }
+            50%  { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .glass-effect {
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+        .pulse-glow { animation: pulseGlow 2s ease-in-out infinite alternate; }
+        @keyframes pulseGlow {
+            from { box-shadow: 0 0 20px rgba(59,130,246,0.5); }
+            to   { box-shadow: 0 0 30px rgba(59,130,246,0.8); }
+        }
+
+        /* ── Table styling ── */
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th {
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.7);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 12px 16px;
+            text-align: left;
+            cursor: pointer;
+            user-select: none;
+        }
+        .data-table th:hover { background: rgba(255,255,255,0.15); }
+        .data-table td {
+            padding: 12px 16px;
+            font-size: 14px;
+            color: white;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+        }
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tr:hover td { background: rgba(255,255,255,0.05); }
+
+        /* ── Event badges ── */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-success  { background: rgba(16,185,129,0.2);  color: #6ee7b7; border: 1px solid rgba(16,185,129,0.3);  }
+        .badge-error    { background: rgba(239,68,68,0.2);   color: #fca5a5; border: 1px solid rgba(239,68,68,0.3);   }
+        .badge-register { background: rgba(59,130,246,0.2);  color: #93c5fd; border: 1px solid rgba(59,130,246,0.3);  }
+        .badge-logout   { background: rgba(245,158,11,0.2);  color: #fcd34d; border: 1px solid rgba(245,158,11,0.3);  }
+        .badge-reset    { background: rgba(139,92,246,0.2);  color: #c4b5fd; border: 1px solid rgba(139,92,246,0.3);  }
+        /* NEW badges for lockout events */
+        .badge-locked   { background: rgba(239,68,68,0.35);  color: #ff8080; border: 1px solid rgba(239,68,68,0.5);   }
+        .badge-unlocked { background: rgba(16,185,129,0.35); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.5);  }
+        .badge-rate     { background: rgba(245,158,11,0.35); color: #fcd34d; border: 1px solid rgba(245,158,11,0.5);  }
+
+        /* ── Stat cards ── */
+        .stat-card {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 16px;
+            padding: 20px;
+            transition: transform 0.2s;
+        }
+        .stat-card:hover { transform: translateY(-2px); }
+
+        /* ── Tab buttons ── */
+        .tab-btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: rgba(255,255,255,0.6);
+            border: none;
+            background: none;
+        }
+        .tab-btn.active { background: rgba(255,255,255,0.15); color: white; }
+
+        /* ── Search input ── */
+        .search-input {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            color: white;
+            padding: 8px 14px 8px 36px;
+            font-size: 14px;
+            outline: none;
+            width: 220px;
+        }
+        .search-input::placeholder { color: rgba(255,255,255,0.35); }
+        .search-input:focus { border-color: rgba(99,102,241,0.8); }
+
+        /* ── Lock status badge on Users table ── */
+        .lock-badge-locked {
+            display: inline-flex; align-items: center; gap: 4px;
+            background: rgba(239,68,68,0.25); color: #fca5a5;
+            border: 1px solid rgba(239,68,68,0.4);
+            padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600;
+        }
+        .lock-badge-ok {
+            display: inline-flex; align-items: center; gap: 4px;
+            background: rgba(16,185,129,0.15); color: #6ee7b7;
+            border: 1px solid rgba(16,185,129,0.25);
+            padding: 2px 8px; border-radius: 999px; font-size: 11px;
+        }
+
+        /* ── Unlock button ── */
+        .btn-unlock {
+            padding: 4px 12px;
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            display: none;  /* shown only for locked rows via JS */
+        }
+        .btn-unlock:hover { opacity: 0.85; }
+
+        /* ── Toast notification ── */
+        #toast {
+            position: fixed;
+            bottom: 24px; right: 24px;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            color: white;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        #toast.show { opacity: 1; }
+        #toast.success { background: rgba(16,185,129,0.9); }
+        #toast.error   { background: rgba(239,68,68,0.9);  }
+    </style>
+</head>
+
+<body class="min-h-screen dna-animation">
+
+    <!-- ── Toast notification (appears after unlock action) ── -->
+    <div id="toast"></div>
+
+    <!-- ── Navbar ── -->
+    <nav class="glass-effect p-5 sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-11 h-11 bg-white rounded-2xl flex items-center justify-center pulse-glow">
+                    <i class="fas fa-dna text-blue-600 text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-white font-bold text-xl">GenoRisk AI</h1>
+                    <p class="text-blue-200 text-xs">Admin Dashboard</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="text-white/60 text-sm">
+                    <i class="fas fa-user-shield mr-1 text-yellow-300"></i>
+                    Logged in as <strong class="text-white">admin</strong>
+                </span>
+                <a href="/logout"
+                   class="px-4 py-2 text-white text-sm font-medium rounded-xl transition-all"
+                   style="background: rgba(239,68,68,0.7);">
+                    <i class="fas fa-sign-out-alt mr-1"></i>Logout
+                </a>
+                <a href="/"
+                   class="px-4 py-2 text-white text-sm font-medium rounded-xl transition-all"
+                   style="background: rgba(59,130,246,0.5);">
+                    <i class="fas fa-arrow-left mr-1"></i>Back to App
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-6 py-10">
+
+        <!-- ── Page title ── -->
+        <div class="mb-8">
+            <h2 class="text-white font-bold text-3xl mb-1">
+                <i class="fas fa-chart-line mr-3 text-blue-300"></i>Security Dashboard
+            </h2>
+            <p class="text-blue-200 text-sm">
+                Monitor all user registrations, logins, lockouts and security events in real time
+            </p>
+        </div>
+
+        <!-- ────────────────────────────────────────────────────────────
+             STAT CARDS
+             NEW: Added "Locked Accounts" card (5th card) so admin can
+             immediately see how many accounts are currently locked.
+             The original had only 4 cards: Users, Logins, Failed, Events.
+        ──────────────────────────────────────────────────────────────── -->
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+
+            <!-- Card 1: Total Users (unchanged) -->
+            <div class="stat-card">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-9 h-9 rounded-xl flex items-center justify-center"
+                         style="background:rgba(59,130,246,0.3)">
+                        <i class="fas fa-users text-blue-300 text-sm"></i>
+                    </div>
+                    <span class="text-white/60 text-sm">Total Users</span>
+                </div>
+                <p class="text-white font-bold text-3xl">{{ users | length }}</p>
+            </div>
+
+            <!-- Card 2: Successful Logins (unchanged) -->
+            <div class="stat-card">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-9 h-9 rounded-xl flex items-center justify-center"
+                         style="background:rgba(16,185,129,0.3)">
+                        <i class="fas fa-check-circle text-green-300 text-sm"></i>
+                    </div>
+                    <span class="text-white/60 text-sm">Successful Logins</span>
+                </div>
+                <p class="text-white font-bold text-3xl">{{ success_count }}</p>
+            </div>
+
+            <!-- Card 3: Failed Logins (unchanged) -->
+            <div class="stat-card">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-9 h-9 rounded-xl flex items-center justify-center"
+                         style="background:rgba(239,68,68,0.3)">
+                        <i class="fas fa-times-circle text-red-300 text-sm"></i>
+                    </div>
+                    <span class="text-white/60 text-sm">Failed Attempts</span>
+                </div>
+                <p class="text-white font-bold text-3xl">{{ failed_count }}</p>
+            </div>
+
+            <!-- Card 4: Total Events (unchanged) -->
+            <div class="stat-card">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-9 h-9 rounded-xl flex items-center justify-center"
+                         style="background:rgba(139,92,246,0.3)">
+                        <i class="fas fa-list text-purple-300 text-sm"></i>
+                    </div>
+                    <span class="text-white/60 text-sm">Total Events</span>
+                </div>
+                <p class="text-white font-bold text-3xl">{{ log | length }}</p>
+            </div>
+
+            <!-- Card 5: NEW — Locked Accounts
+                 Counts users where is_locked == True (passed from app.py via get_all_users()).
+                 Glows red to warn admin at a glance. -->
+            <div class="stat-card" style="border-color: rgba(239,68,68,0.35);">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-9 h-9 rounded-xl flex items-center justify-center"
+                         style="background:rgba(239,68,68,0.3)">
+                        <i class="fas fa-lock text-red-300 text-sm"></i>
+                    </div>
+                    <span class="text-white/60 text-sm">Locked Accounts</span>
+                </div>
+                <!-- Jinja2 counts how many user dicts have is_locked == true -->
+                <p class="text-white font-bold text-3xl"
+                   style="color: {% if users | selectattr('is_locked', 'equalto', true) | list | length > 0 %}#fca5a5{% else %}white{% endif %};">
+                    {{ users | selectattr('is_locked', 'equalto', true) | list | length }}
+                </p>
+            </div>
+
+        </div><!-- end stat cards -->
+
+
+        <!-- ────────────────────────────────────────────────────────────
+             MAIN TABLE CARD
+        ──────────────────────────────────────────────────────────────── -->
+        <div class="glass-effect rounded-2xl p-6">
+
+            <!-- Tab switcher + search row -->
+            <div class="flex items-center justify-between mb-5 flex-wrap gap-3">
+                <div class="flex gap-2">
+                    <button class="tab-btn active" id="tab-log"   onclick="switchTab('log')">
+                        <i class="fas fa-history mr-2"></i>Activity Log
+                    </button>
+                    <button class="tab-btn"        id="tab-users" onclick="switchTab('users')">
+                        <i class="fas fa-users mr-2"></i>Registered Users
+                    </button>
+                </div>
+
+                <!-- Right-side controls: search + export -->
+                <div class="flex items-center gap-3">
+                    <!-- Search box (unchanged logic, same CSS) -->
+                    <div class="relative">
+                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-white/35 text-xs pointer-events-none"></i>
+                        <input type="text" class="search-input" placeholder="Search..."
+                               oninput="filterTable(this.value)">
+                    </div>
+
+                    <!-- NEW: Export Log button
+                         Converts the visible activity log rows into a CSV string and
+                         triggers a browser download — no server request needed.
+                         Academic concept: Audit Trail export / evidence preservation. -->
+                    <button onclick="exportLog()"
+                            id="exportBtn"
+                            class="px-4 py-2 text-white text-sm font-medium rounded-xl transition-all"
+                            style="background: rgba(139,92,246,0.5); display:inline-flex; align-items:center; gap:6px;">
+                        <i class="fas fa-download mr-1"></i>Export CSV
+                    </button>
+                </div>
+            </div>
+
+
+            <!-- ════════════════════════════════════════
+                 ACTIVITY LOG TABLE
+                 Changes vs original:
+                   • Added "IP Address" column
+                   • Added new badge styles: ACCOUNT_LOCKED, ACCOUNT_UNLOCKED, RATE_LIMITED
+                   • Rows with ACCOUNT_LOCKED get a subtle red left border highlight
+            ════════════════════════════════════════ -->
+            <div id="panel-log">
+                {% if log %}
+                <div style="overflow-x:auto;">
+                    <table class="data-table" id="logTable">
+                        <thead>
+                            <tr>
+                                <th onclick="sortTable('logTable',0)">#</th>
+                                <th onclick="sortTable('logTable',1)">Timestamp</th>
+                                <th onclick="sortTable('logTable',2)">Username</th>
+                                <th onclick="sortTable('logTable',3)">Event</th>
+                                <!-- NEW column: IP Address -->
+                                <th onclick="sortTable('logTable',4)">IP Address</th>
+                                <th onclick="sortTable('logTable',5)">Note</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for entry in log | reverse %}
+                            <tr {% if entry.event in ['ACCOUNT_LOCKED','RATE_LIMITED'] %}
+                                style="border-left: 3px solid rgba(239,68,68,0.6);"
+                                {% endif %}>
+                                <td class="text-white/40">{{ loop.index }}</td>
+                                <td class="text-white/70">
+                                    <i class="fas fa-clock mr-1 text-white/30"></i>
+                                    {{ entry.timestamp }}
+                                </td>
+                                <td>
+                                    <span class="font-medium">{{ entry.username }}</span>
+                                </td>
+                                <td>
+                                    {% if entry.event == 'LOGIN_SUCCESS' %}
+                                        <span class="badge badge-success">
+                                            <i class="fas fa-check"></i> Login Success
+                                        </span>
+                                    {% elif entry.event == 'LOGIN_FAILED' %}
+                                        <span class="badge badge-error">
+                                            <i class="fas fa-times"></i> Login Failed
+                                        </span>
+                                    {% elif entry.event == 'REGISTER' %}
+                                        <span class="badge badge-register">
+                                            <i class="fas fa-user-plus"></i> Registered
+                                        </span>
+                                    {% elif entry.event == 'LOGOUT' %}
+                                        <span class="badge badge-logout">
+                                            <i class="fas fa-sign-out-alt"></i> Logout
+                                        </span>
+                                    {% elif entry.event == 'PASSWORD_RESET' %}
+                                        <span class="badge badge-reset">
+                                            <i class="fas fa-key"></i> Password Reset
+                                        </span>
+                                    <!-- NEW event badges below -->
+                                    {% elif entry.event == 'ACCOUNT_LOCKED' %}
+                                        <span class="badge badge-locked">
+                                            <i class="fas fa-lock"></i> Account Locked
+                                        </span>
+                                    {% elif entry.event == 'ACCOUNT_UNLOCKED' %}
+                                        <span class="badge badge-unlocked">
+                                            <i class="fas fa-lock-open"></i> Unlocked by Admin
+                                        </span>
+                                    {% elif entry.event == 'RATE_LIMITED' %}
+                                        <span class="badge badge-rate">
+                                            <i class="fas fa-ban"></i> Rate Limited
+                                        </span>
+                                    {% elif entry.event == 'USER_DELETED' %}
+                                        <span class="badge" style="background:rgba(239,68,68,0.35);color:#ff8080;border:1px solid rgba(239,68,68,0.5);">
+                                            <i class="fas fa-trash"></i> User Deleted
+                                        </span>
+                                    {% elif entry.event == 'ADMIN_PIN_OK' %}
+                                        <span class="badge badge-success">
+                                            <i class="fas fa-shield-alt"></i> PIN Verified
+                                        </span>
+                                    {% elif entry.event == 'ADMIN_PIN_FAILED' %}
+                                        <span class="badge badge-error">
+                                            <i class="fas fa-shield-alt"></i> PIN Failed
+                                        </span>
+                                    {% elif entry.event == 'PIN_CHANGED' %}
+                                        <span class="badge badge-reset">
+                                            <i class="fas fa-key"></i> PIN Changed
+                                        </span>
+                                    {% else %}
+                                        <span class="badge badge-logout">{{ entry.event }}</span>
+                                    {% endif %}
+                                </td>
+                                <!-- NEW: Display IP address from log entry
+                                     entry.ip is logged by write_log() in auth.py -->
+                                <td class="text-white/50 text-xs font-mono">
+                                    {{ entry.ip or '—' }}
+                                </td>
+                                <td class="text-white/50 text-xs">{{ entry.note or '—' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-16">
+                    <i class="fas fa-history text-white/20 text-5xl mb-4"></i>
+                    <p class="text-white/40">No activity recorded yet.</p>
+                    <p class="text-white/25 text-sm mt-1">
+                        Events will appear here after users register or login.
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+
+
+            <!-- ════════════════════════════════════════
+                 REGISTERED USERS TABLE
+                 Changes vs original:
+                   • Replaced short "Security Question" column with full question text
+                   • Added "Failed Attempts" column (shows counter from users.json)
+                   • Added "Status" column: green Active / red Locked badge
+                   • Added "Action" column: Unlock button for locked accounts
+                     (calls POST /admin/unlock via JS, then reloads the page)
+            ════════════════════════════════════════ -->
+            <div id="panel-users" class="hidden">
+                {% if users %}
+                <div style="overflow-x:auto;">
+                    <table class="data-table" id="usersTable">
+                        <thead>
+                            <tr>
+                                <th onclick="sortTable('usersTable',0)">#</th>
+                                <th onclick="sortTable('usersTable',1)">Username</th>
+                                <th onclick="sortTable('usersTable',2)">Registered At</th>
+                                <th onclick="sortTable('usersTable',3)">Security Question</th>
+                                <!-- NEW columns -->
+                                <th onclick="sortTable('usersTable',4)">Failed Attempts</th>
+                                <th onclick="sortTable('usersTable',5)">Status</th>
+                                <th>Unlock</th>
+                                <th>Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr>
+                                <td class="text-white/40">{{ loop.index }}</td>
+                                <td>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-8 h-8 rounded-full flex items-center justify-center
+                                                    text-xs font-bold"
+                                             style="background: linear-gradient(135deg,#3b82f6,#8b5cf6);">
+                                            {{ user.username[0].upper() }}
+                                        </div>
+                                        <span class="font-medium">{{ user.username }}</span>
+                                    </div>
+                                </td>
+                                <td class="text-white/70">
+                                    <i class="fas fa-calendar mr-1 text-white/30"></i>
+                                    {{ user.registered_at }}
+                                </td>
+                                <!-- Full security question text (not truncated via q_map anymore) -->
+                                <td class="text-white/50 text-xs">
+                                    <i class="fas fa-shield-alt mr-1 text-yellow-400/60"></i>
+                                    {{ user.security_question if user.security_question else '—' }}
+                                </td>
+                                <!-- NEW: Failed Attempts counter
+                                     Red color if counter > 0 to draw attention -->
+                                <td class="text-center">
+                                    <span style="color: {% if user.failed_attempts > 0 %}#fca5a5{% else %}rgba(255,255,255,0.4){% endif %}; font-weight: 600;">
+                                        {{ user.failed_attempts }}
+                                    </span>
+                                </td>
+                                <!-- NEW: Status badge — Active or Locked -->
+                                <td>
+                                    {% if user.is_locked %}
+                                        <span class="lock-badge-locked">
+                                            <i class="fas fa-lock text-xs"></i> Locked
+                                        </span>
+                                        {% if user.locked_until %}
+                                        <p style="color:rgba(252,165,165,0.6); font-size:11px; margin-top:3px;">until {{ user.locked_until }}</p>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="lock-badge-ok">
+                                            <i class="fas fa-check text-xs"></i> Active
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <!-- NEW: Action — Unlock button visible only for locked accounts -->
+                                <!-- Unlock cell -->
+                                <td>
+                                    {% if user.is_locked %}
+                                    <button class="btn-unlock"
+                                            style="display:inline-flex; align-items:center; gap:5px;"
+                                            onclick="unlockUser('{{ user.username }}', this)">
+                                        <i class="fas fa-lock-open"></i> Unlock
+                                    </button>
+                                    {% else %}
+                                        <span class="text-white/20 text-xs">—</span>
+                                    {% endif %}
+                                </td>
+                                <!-- Delete cell — NEW
+                                     Permanently removes the user from users.json.
+                                     Asks for confirmation before sending the request.
+                                     Demonstrates: User Management / Access Revocation -->
+                                <td>
+                                    <button
+                                        onclick="deleteUser('{{ user.username }}', this)"
+                                        style="display:inline-flex; align-items:center; gap:5px;
+                                               padding:4px 12px; background:linear-gradient(135deg,#ef4444,#991b1b);
+                                               border:none; border-radius:8px; color:white;
+                                               font-size:12px; font-weight:600; cursor:pointer; transition:opacity 0.2s;">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-16">
+                    <i class="fas fa-users text-white/20 text-5xl mb-4"></i>
+                    <p class="text-white/40">No users registered yet.</p>
+                </div>
+                {% endif %}
+            </div>
+
+        </div><!-- end glass card -->
+
+
+        <!-- ── Change Admin PIN card (NEW) ──────────────────────────────
+             Allows admin to update their MFA PIN from the dashboard.
+             Demonstrates: MFA Credential Management security concept.
+        ─────────────────────────────────────────────────────────────── -->
+        <div class="glass-effect rounded-2xl p-6 mt-6">
+            <h3 class="text-white font-semibold text-lg mb-1">
+                <i class="fas fa-key mr-2 text-yellow-300"></i>Change Admin PIN
+            </h3>
+            <p class="text-white/40 text-sm mb-4">
+                Update your Multi-Factor Authentication (MFA) PIN.
+                Must be exactly 4 digits.
+            </p>
+            <div class="flex items-center gap-3 flex-wrap">
+                <input type="password" id="newPinInput"
+                       maxlength="4" inputmode="numeric"
+                       placeholder="Enter new 4-digit PIN"
+                       style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2);
+                              border-radius:10px; color:white; padding:10px 14px; font-size:15px;
+                              outline:none; width:200px;"
+                       onkeypress="return /[0-9]/.test(event.key)">
+                <button onclick="changePin()"
+                        style="padding:10px 20px; background:linear-gradient(135deg,#f59e0b,#ef4444);
+                               border:none; border-radius:10px; color:white; font-size:14px;
+                               font-weight:600; cursor:pointer; transition:opacity 0.2s;">
+                    <i class="fas fa-save mr-2"></i>Update PIN
+                </button>
+                <span class="text-white/30 text-xs">Default PIN is 1234 — change it now for security.</span>
+            </div>
+        </div>
+
+    </div><!-- end container -->
+
+
+    <script>
+        // ─────────────────────────────────────────────────
+        // Tab switching (Activity Log ↔ Registered Users)
+        // Unchanged logic from original
+        // ─────────────────────────────────────────────────
+        function switchTab(tab) {
+            document.getElementById('panel-log').classList.toggle('hidden',   tab !== 'log');
+            document.getElementById('panel-users').classList.toggle('hidden', tab !== 'users');
+            document.getElementById('tab-log').classList.toggle('active',   tab === 'log');
+            document.getElementById('tab-users').classList.toggle('active', tab === 'users');
+            // Show export button only on log tab
+            document.getElementById('exportBtn').style.display =
+                tab === 'log' ? 'inline-flex' : 'none';
+        }
+
+        // ─────────────────────────────────────────────────
+        // Search / filter visible table rows (unchanged logic)
+        // ─────────────────────────────────────────────────
+        function filterTable(query) {
+            const q = query.toLowerCase();
+            const activeTable = document.getElementById('panel-log').classList.contains('hidden')
+                ? document.getElementById('usersTable')
+                : document.getElementById('logTable');
+            if (!activeTable) return;
+            activeTable.querySelectorAll('tbody tr').forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(q) ? '' : 'none';
+            });
+        }
+
+        // ─────────────────────────────────────────────────
+        // NEW: Sort any table by clicking a column header
+        // Academic concept: Data integrity — view data in any order
+        // ─────────────────────────────────────────────────
+        let _sortState = {};   // { tableId: { col, asc } }
+        function sortTable(tableId, colIndex) {
+            const table = document.getElementById(tableId);
+            if (!table) return;
+            const state  = _sortState[tableId] || { col: -1, asc: true };
+            const asc    = state.col === colIndex ? !state.asc : true;
+            _sortState[tableId] = { col: colIndex, asc };
+
+            const rows = Array.from(table.querySelectorAll('tbody tr'));
+            rows.sort((a, b) => {
+                const A = (a.cells[colIndex]?.innerText || '').trim();
+                const B = (b.cells[colIndex]?.innerText || '').trim();
+                return asc ? A.localeCompare(B, undefined, { numeric: true })
+                           : B.localeCompare(A, undefined, { numeric: true });
+            });
+            rows.forEach(r => table.querySelector('tbody').appendChild(r));
+        }
+
+        // ─────────────────────────────────────────────────
+        // NEW: Export Activity Log as CSV
+        // Loops through visible log table rows and builds a CSV string,
+        // then triggers a browser download without any server round-trip.
+        // Academic concept: Audit Trail preservation / forensics evidence export
+        // ─────────────────────────────────────────────────
+        function exportLog() {
+            const table = document.getElementById('logTable');
+            if (!table) return;
+            const rows  = Array.from(table.querySelectorAll('tbody tr'));
+            const lines = ['#,Timestamp,Username,Event,IP Address,Note'];
+            rows.forEach(row => {
+                if (row.style.display === 'none') return;   // skip filtered-out rows
+                const cells = Array.from(row.cells).map(c =>
+                    '"' + c.innerText.trim().replace(/"/g, '""') + '"'
+                );
+                lines.push(cells.join(','));
+            });
+            const csv  = lines.join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url  = URL.createObjectURL(blob);
+            const a    = document.createElement('a');
+            a.href     = url;
+            a.download = `activity_log_${new Date().toISOString().slice(0,10)}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // ─────────────────────────────────────────────────
+        // NEW: Toast helper — pops a small notification at bottom-right
+        // ─────────────────────────────────────────────────
+        function showToast(msg, type = 'success') {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className   = `show ${type}`;
+            clearTimeout(t._timer);
+            t._timer = setTimeout(() => { t.className = type; }, 3000);
+        }
+
+        // ─────────────────────────────────────────────────
+        // NEW: Unlock User (admin action)
+        // Sends POST /admin/unlock with the username.
+        // On success: updates the row in-place (no full page reload needed).
+        // Academic concept: Privilege-based admin action + Audit Trail (unlock is logged)
+        // ─────────────────────────────────────────────────
+        async function unlockUser(username, btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Unlocking…';
+            try {
+                const res  = await fetch('/admin/unlock', {
+                    method:  'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body:    JSON.stringify({ username })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    // Update the row without a full reload
+                    const row       = btn.closest('tr');
+                    // Replace Status cell (index 5) with Active badge
+                    row.cells[5].innerHTML =
+                        '<span class="lock-badge-ok"><i class="fas fa-check text-xs"></i> Active</span>';
+                    // Replace Action cell (index 6) with dash
+                    row.cells[6].innerHTML = '<span class="text-white/20 text-xs">—</span>';
+                    // Clear failed attempts cell (index 4)
+                    row.cells[4].innerHTML = '<span style="color:rgba(255,255,255,0.4); font-weight:600;">0</span>';
+                    showToast(`✓ ${username} has been unlocked.`, 'success');
+                } else {
+                    showToast('⚠ Unlock failed: ' + data.message, 'error');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-lock-open"></i> Unlock';
+                }
+            } catch {
+                showToast('⚠ Network error. Please try again.', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-lock-open"></i> Unlock';
+            }
+        }
+        // ─────────────────────────────────────────────────
+        // Delete User (NEW)
+        // Asks for confirmation, then sends POST /admin/delete.
+        // On success: removes the row from the table without page reload.
+        // Academic concept: User Management / Access Revocation + Audit Trail
+        // ─────────────────────────────────────────────────
+        async function deleteUser(username, btn) {
+            // Confirm before deleting — prevents accidental deletion
+            if (!confirm(`Are you sure you want to permanently delete user "${username}"?\n\nThis action cannot be undone.`)) {
+                return;
+            }
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            try {
+                const res  = await fetch('/admin/delete', {
+                    method:  'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body:    JSON.stringify({ username })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    // Remove the row from the table immediately
+                    btn.closest('tr').remove();
+                    showToast(`✓ User "${username}" has been deleted.`, 'success');
+                    // Update total users count card
+                    const countEl = document.querySelector('.stat-card p.text-3xl');
+                    if (countEl) {
+                        const cur = parseInt(countEl.textContent) || 0;
+                        if (cur > 0) countEl.textContent = cur - 1;
+                    }
+                } else {
+                    showToast('⚠ Delete failed: ' + data.message, 'error');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-trash"></i> Delete';
+                }
+            } catch {
+                showToast('⚠ Network error. Please try again.', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-trash"></i> Delete';
+            }
+        }
+
+        // ─────────────────────────────────────────────────
+        // Change Admin PIN (NEW)
+        // Sends POST /admin/change-pin with the new 4-digit PIN.
+        // Academic concept: MFA credential management
+        // ─────────────────────────────────────────────────
+        async function changePin() {
+            const newPin = document.getElementById('newPinInput').value.trim();
+            if (!newPin || newPin.length !== 4 || !/^\d{4}$/.test(newPin)) {
+                showToast('⚠ PIN must be exactly 4 digits.', 'error');
+                return;
+            }
+            try {
+                const res  = await fetch('/admin/change-pin', {
+                    method:  'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body:    JSON.stringify({ new_pin: newPin })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('✓ PIN changed successfully!', 'success');
+                    document.getElementById('newPinInput').value = '';
+                } else {
+                    showToast('⚠ ' + data.message, 'error');
+                }
+            } catch {
+                showToast('⚠ Network error. Please try again.', 'error');
+            }
+        }
+    </script>
+</body>
+</html>

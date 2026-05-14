@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GenoRisk AI - Advanced Genomic Risk Analysis Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 25%, #8b5cf6 50%, #ec4899 75%, #f59e0b 100%);
+        }
+        
+        .dna-animation {
+            background: linear-gradient(-45deg, #1e3a8a, #3b82f6, #8b5cf6, #ec4899, #f59e0b);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .risk-low { 
+            background: linear-gradient(135deg, #10b981, #059669);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        .risk-medium { 
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+        }
+        .risk-high { 
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+        
+        .floating-element {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .pulse-glow {
+            animation: pulseGlow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes pulseGlow {
+            from { box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
+            to { box-shadow: 0 0 30px rgba(59, 130, 246, 0.8); }
+        }
+        
+        .slide-in {
+            animation: slideIn 0.6s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .disease-card {
+            transition: all 0.3s ease;
+        }
+        
+        .disease-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .tab-btn.active {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* Ensure native select dropdown options are readable */
+        select option {
+            color: #111827; /* text-gray-900 */
+            background-color: #ffffff; /* white */
+        }
+        /* Improve placeholder visibility in dropdown list */
+        select option[disabled] {
+            color: #9ca3af; /* text-gray-400 */
+        }
+    </style>
+</head>
+<body class="min-h-screen dna-animation">
+    <!-- Navigation -->
+    <nav class="glass-effect p-6 sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center pulse-glow">
+                    <i class="fas fa-dna text-blue-600 text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-white font-bold text-2xl">GenoRisk AI</h1>
+                    <p class="text-blue-200 text-sm">Advanced Genomic Analysis Platform</p>
+                </div>
+            </div>
+            <div class="flex space-x-2 items-center">
+                <button onclick="showTab('upload')" class="tab-btn px-6 py-3 text-white hover:bg-white/20 rounded-xl transition-all duration-300 font-medium" id="upload-tab">
+                    <i class="fas fa-upload mr-2"></i>Analysis
+                </button>
+                <button onclick="showTab('chat')" class="tab-btn px-6 py-3 text-white hover:bg-white/20 rounded-xl transition-all duration-300 font-medium" id="chat-tab">
+                    <i class="fas fa-comments mr-2"></i>AI Chat
+                </button>
+                <button onclick="showTab('nutrition')" class="tab-btn px-6 py-3 text-white hover:bg-white/20 rounded-xl transition-all duration-300 font-medium" id="nutrition-tab">
+                    <i class="fas fa-apple-alt mr-2"></i>Nutrition
+                </button>
+
+                <!-- Admin Dashboard button — only visible to admin -->
+                {% if is_admin %}
+                <a href="/admin"
+                   class="px-5 py-3 text-white font-medium rounded-xl transition-all duration-300 flex items-center"
+                   style="background: rgba(245,158,11,0.7);">
+                    <i class="fas fa-user-shield mr-2"></i>Admin Dashboard
+                </a>
+                {% endif %}
+
+                <!-- Logout button — visible to ALL logged-in users -->
+                <a href="/logout"
+                   class="px-5 py-3 text-white font-medium rounded-xl transition-all duration-300 flex items-center"
+                   style="background: rgba(239,68,68,0.7);">
+                    <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-6 py-12">
+        <!-- Upload Tab -->
+        <div id="upload-content" class="tab-content">
+            <div class="max-w-6xl mx-auto">
+                <!-- Hero Section -->
+                <div class="text-center mb-16">
+                    <h2 class="text-6xl font-bold text-white mb-6 leading-tight">
+                        Personalized <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">Genomic Risk Analysis</span>
+                    </h2>
+                    <p class="text-blue-100 text-xl max-w-3xl mx-auto leading-relaxed">
+                        Leverage cutting-edge AI and genomic science to discover personalized health insights, 
+                        disease risk assessments, and tailored nutrition & exercise recommendations
+                    </p>
+                    <div class="flex justify-center space-x-4 mt-8">
+                        <div class="flex items-center text-blue-200">
+                            <i class="fas fa-shield-alt mr-2"></i>
+                            <span>Advanced Security</span>
+                        </div>
+                        <div class="flex items-center text-blue-200">
+                            <i class="fas fa-brain mr-2"></i>
+                            <span>AI-Powered Analysis</span>
+                        </div>
+                        <div class="flex items-center text-blue-200">
+                            <i class="fas fa-chart-line mr-2"></i>
+                            <span>Real-time Results</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upload Form -->
+                <div class="glass-effect rounded-3xl p-12 mb-12 floating-element">
+                    <div class="text-center mb-8">
+                        <div class="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-dna text-white text-4xl"></i>
+                        </div>
+                        <h3 class="text-3xl font-bold text-white mb-4">Upload Your Genetic Data</h3>
+                        <p class="text-blue-100 text-lg max-w-2xl mx-auto">
+                            Support for 23andMe, AncestryDNA, PLINK formats, and other genetic testing platforms. 
+                            Your data is processed securely and never stored permanently.
+                        </p>
+                    </div>
+                    
+                    <form id="uploadForm" class="space-y-8">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="space-y-4">
+                                <label class="block">
+                                    <span class="text-white font-semibold text-lg mb-2 block">Genetic Data File</span>
+                                    <div class="relative">
+                                        <input type="file" id="genomicFile" accept=".txt,.csv,.ped,.map" required
+                                               class="w-full px-4 py-4 bg-white/10 border-2 border-white/20 rounded-xl text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-500 file:text-white hover:file:bg-blue-600 transition-all duration-300 focus:outline-none focus:border-blue-400">
+                                    </div>
+                                    <p class="text-blue-200 text-sm mt-2">Supported formats: TXT, CSV, PLINK (.ped/.map)</p>
+                                </label>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <label class="block">
+                                    <span class="text-white font-semibold text-lg mb-2 block">Age</span>
+                                    <select id="age" required class="w-full px-4 py-4 bg-white/10 border-2 border-white/20 rounded-xl text-white focus:outline-none focus:border-blue-400">
+                                        <option value="" disabled selected>Select your age group</option>
+                                        <option value="18">18-24 (Young Adult)</option>
+                                        <option value="25">25-34 (Young Adult)</option>
+                                        <option value="35">35-44 (Young Adult)</option>
+                                        <option value="45">45-54 (Middle Aged)</option>
+                                        <option value="55">55-64 (Middle Aged)</option>
+                                        <option value="65">65-74 (Senior)</option>
+                                        <option value="75">75+ (Senior)</option>
+                                    </select>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center">
+                            <button type="submit" id="analyzeBtn" class="group relative px-12 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold text-lg rounded-2xl hover:from-blue-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-300 shadow-2xl">
+                                <span id="analyzeText">
+                                    <i class="fas fa-rocket mr-3"></i>Analyze My Genome
+                                </span>
+                                <span id="loadingText" class="hidden">
+                                    <i class="fas fa-spinner fa-spin mr-3"></i>Analyzing...
+                                </span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Results Section -->
+                <div id="results" class="hidden space-y-8 slide-in">
+                    <!-- Risk Summary -->
+                    <div class="glass-effect rounded-3xl p-8 text-center">
+                        <h3 class="text-2xl font-bold text-white mb-6">Your Genomic Risk Assessment</h3>
+                        <div class="flex justify-center mb-8">
+                            <div id="riskBadge" class="w-32 h-32 rounded-full flex items-center justify-center mx-auto">
+                                <span id="riskLevel" class="text-white font-bold text-2xl"></span>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="bg-white/10 rounded-2xl p-6">
+                                <div class="w-16 h-16 bg-blue-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-dna text-blue-400 text-2xl"></i>
+                                </div>
+                                <h4 class="text-white font-semibold text-lg mb-2">Total SNPs Analyzed</h4>
+                                <p id="snpCount" class="text-blue-200 text-3xl font-bold">0</p>
+                            </div>
+                            <div class="bg-white/10 rounded-2xl p-6">
+                                <div class="w-16 h-16 bg-purple-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-exclamation-triangle text-purple-400 text-2xl"></i>
+                                </div>
+                                <h4 class="text-white font-semibold text-lg mb-2">Conditions Detected</h4>
+                                <p id="diseaseCount" class="text-purple-200 text-3xl font-bold">0</p>
+                            </div>
+                            <div class="bg-white/10 rounded-2xl p-6">
+                                <div class="w-16 h-16 bg-green-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-shield-alt text-green-400 text-2xl"></i>
+                                </div>
+                                <h4 class="text-white font-semibold text-lg mb-2">Risk Level</h4>
+                                <p id="riskLevelText" class="text-green-200 text-3xl font-bold">-</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Disease Details -->
+                    <div class="glass-effect rounded-3xl p-8">
+                        <h3 class="text-2xl font-bold text-white mb-6 flex items-center">
+                            <i class="fas fa-microscope mr-3 text-blue-400"></i>
+                            Detected Genetic Conditions
+                        </h3>
+                        <div id="diseaseList" class="space-y-6">
+                            <!-- Disease cards will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Tab -->
+        <div id="chat-content" class="tab-content hidden">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold text-white mb-6">AI-Powered Genomic Health Assistant</h2>
+                    <p class="text-blue-100 text-xl max-w-3xl mx-auto">Get personalized insights about your genetic results, ask health questions, and receive expert guidance powered by advanced AI</p>
+                </div>
+                
+                <div class="glass-effect rounded-3xl p-8">
+                    <div class="flex justify-between items-center mb-6">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center">
+                                <i class="fas fa-robot text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-white font-bold text-xl">GenoRisk AI Assistant</h3>
+                                <p class="text-blue-200 text-sm">Powered by advanced genomic medicine AI</p>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="newChatSession()" class="px-4 py-2 bg-white/20 text-white rounded-xl hover:bg-white/30 transition-all duration-300 font-medium">
+                                <i class="fas fa-plus mr-2"></i>New Chat
+                            </button>
+                            <button onclick="clearChat()" class="px-4 py-2 bg-red-500/20 text-red-200 rounded-xl hover:bg-red-500/30 transition-all duration-300 font-medium">
+                                <i class="fas fa-trash mr-2"></i>Clear
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Messages -->
+                    <div id="chatMessages" class="h-96 overflow-y-auto mb-6 space-y-4">
+                        <div class="bg-white/10 rounded-2xl p-6 max-w-4xl">
+                            <div class="flex items-start space-x-3">
+                                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-robot text-white"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-white text-lg leading-relaxed">Hello! I'm your GenoRisk AI assistant, specialized in genomic medicine and personalized healthcare. I can help you understand your genetic analysis results, answer health questions, and provide personalized recommendations. How can I assist you today?</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Input -->
+                    <div class="flex space-x-3">
+                        <input type="text" id="chatInput" placeholder="Ask about your genetic results, health questions, or request personalized advice..." 
+                               class="flex-1 px-6 py-4 bg-white/10 border-2 border-white/20 rounded-2xl text-white placeholder-blue-200 focus:outline-none focus:border-blue-400 text-lg">
+                        <button onclick="sendMessage()" id="sendBtn" 
+                                class="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-2xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105">
+                            <span id="sendBtnText"><i class="fas fa-paper-plane mr-2"></i>Send</span>
+                            <span id="sendBtnLoading" class="hidden"><i class="fas fa-spinner fa-spin mr-2"></i>Sending</span>
+                        </button>
+                    </div>
+                    <div class="mt-3 text-right space-y-2">
+                        <button onclick="quickAskNutrition()" class="px-4 py-2 bg-white/20 text-white rounded-xl hover:bg-white/30 transition-all duration-300 font-medium">
+                            <i class="fas fa-utensils mr-2"></i>What should I eat to reduce my diabetes risk?
+                        </button>
+                        <div class="flex flex-wrap gap-2 justify-end">
+                            <button onclick="prefill('Explain my risk results in simple terms')" class="px-3 py-1 bg-white/10 text-white rounded-lg hover:bg-white/20 text-sm">Explain my risk</button>
+                            <button onclick="prefill('How can I lower cardiovascular risk? Give 3 actionable steps')" class="px-3 py-1 bg-white/10 text-white rounded-lg hover:bg-white/20 text-sm">Lower heart risk</button>
+                            <button onclick="prefill('Safe weekly exercise plan for my results?')" class="px-3 py-1 bg-white/10 text-white rounded-lg hover:bg-white/20 text-sm">Exercise plan</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nutrition Tab -->
+        <div id="nutrition-content" class="tab-content hidden">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold text-white mb-6">Personalized Nutrition & Exercise Plans</h2>
+                    <p class="text-blue-100 text-xl max-w-4xl mx-auto">Evidence-based, age-appropriate nutrition and exercise recommendations tailored to your genetic risk profile and specific health conditions</p>
+                </div>
+                
+                <div id="nutritionPlans" class="space-y-10">
+                    <div class="glass-effect rounded-3xl p-12 text-center">
+                        <div class="w-24 h-24 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-apple-alt text-blue-400 text-4xl"></i>
+                        </div>
+                        <h3 class="text-white text-2xl font-bold mb-4">No Analysis Yet</h3>
+                        <p class="text-blue-200 text-lg">Upload your genetic data first to receive personalized nutrition and exercise recommendations</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+        <div class="glass-effect rounded-3xl p-12 text-center max-w-md">
+            <div class="relative">
+                <div class="w-20 h-20 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
+                <div class="absolute inset-0 w-20 h-20 border-4 border-purple-500 border-b-transparent rounded-full animate-spin mx-auto" style="animation-direction: reverse; animation-duration: 1.5s;"></div>
+            </div>
+            <h3 class="text-white text-2xl font-bold mb-4">Analyzing Your Genetic Data</h3>
+            <p class="text-blue-200 text-lg">This may take a few moments...</p>
+            <div class="mt-6 text-blue-300 text-sm">
+                <i class="fas fa-shield-alt mr-2"></i>
+                Your data is processed securely and never stored permanently
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentSessionId = null;
+        let currentResults = null;
+
+        // Tab functionality
+        function showTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName + '-content').classList.remove('hidden');
+            
+            // Add active class to selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+        }
+
+        // Upload form handling
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            const analyzeText = document.getElementById('analyzeText');
+            const loadingText = document.getElementById('loadingText');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            
+            // Show loading state
+            analyzeText.classList.add('hidden');
+            loadingText.classList.remove('hidden');
+            analyzeBtn.disabled = true;
+            loadingOverlay.classList.remove('hidden');
+            
+            const formData = new FormData();
+            formData.append('genomicFile', document.getElementById('genomicFile').files[0]);
+            formData.append('age', document.getElementById('age').value);
+            
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    currentResults = data;
+                    displayResults(data);
+                    
+                    // Also get nutrition plans
+                    const nutritionResponse = await fetch('/analyze_genome', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            disease_results: data.matched_diseases,
+                            age: parseInt(document.getElementById('age').value)
+                        })
+                    });
+                    
+                    const nutritionData = await nutritionResponse.json();
+                    displayNutritionPlans(nutritionData.nutrition_plans);
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Network error: ' + error.message);
+            } finally {
+                // Reset button state
+                analyzeText.classList.remove('hidden');
+                loadingText.classList.add('hidden');
+                analyzeBtn.disabled = false;
+                loadingOverlay.classList.add('hidden');
+            }
+        });
+
+        function displayResults(data) {
+            // Store genomic analysis results for enhanced chat
+            window.genomicAnalysisResults = {
+                risk_level: data.risk_level,
+                matched_diseases: data.matched_diseases,
+                total_snps: data.total_snps || 0,
+                matched_snps: data.matched_snps || []
+            };
+            
+            document.getElementById('results').classList.remove('hidden');
+            
+            // Update risk level - ensure consistency
+            const riskBadge = document.getElementById('riskBadge');
+            const riskLevel = document.getElementById('riskLevel');
+            const riskLevelText = document.getElementById('riskLevelText');
+            const riskLevelTextContent = data.risk_level.charAt(0).toUpperCase() + data.risk_level.slice(1).toLowerCase();
+            riskLevel.textContent = riskLevelTextContent;
+            riskLevelText.textContent = riskLevelTextContent;
+            
+            // Remove all risk classes and add the correct one
+            riskBadge.className = 'w-32 h-32 rounded-full flex items-center justify-center mx-auto';
+            riskBadge.classList.add(`risk-${data.risk_level.toLowerCase()}`);
+            
+            // Update stats
+            const totalSnps = data.matched_diseases.reduce((sum, [_, count]) => sum + count, 0);
+            document.getElementById('snpCount').textContent = totalSnps;
+            document.getElementById('diseaseCount').textContent = data.matched_diseases.length;
+            
+            // Display diseases with more detailed information
+            const diseaseList = document.getElementById('diseaseList');
+            diseaseList.innerHTML = '';
+            
+            if (data.matched_diseases.length === 0) {
+                const noDiseaseCard = document.createElement('div');
+                noDiseaseCard.className = 'bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30 rounded-2xl p-8 text-center disease-card';
+                noDiseaseCard.innerHTML = `
+                    <div class="w-20 h-20 bg-green-500/30 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-check-circle text-green-400 text-4xl"></i>
+                    </div>
+                    <h4 class="text-white font-bold text-2xl mb-4">No Specific Conditions Detected</h4>
+                    <p class="text-green-200 text-lg leading-relaxed">Your genetic profile shows no significant disease associations in our database. This is generally a positive finding!</p>
+                    <div class="mt-6 bg-white/10 rounded-xl p-4">
+                        <p class="text-white text-sm">Continue to the Nutrition tab for general health optimization recommendations.</p>
+                    </div>
+                `;
+                diseaseList.appendChild(noDiseaseCard);
+            } else {
+                data.matched_diseases.forEach(([disease, count], index) => {
+                    const diseaseCard = document.createElement('div');
+                    diseaseCard.className = 'bg-white/10 rounded-2xl p-8 disease-card';
+                    
+                    // Determine risk level for this specific disease
+                    let diseaseRiskLevel = "Low";
+                    let riskColor = "green";
+                    if (count >= 5) {
+                        diseaseRiskLevel = "High";
+                        riskColor = "red";
+                    } else if (count >= 2) {
+                        diseaseRiskLevel = "Medium";
+                        riskColor = "yellow";
+                    }
+                    
+                    // Get disease icon and color
+                    const diseaseInfo = getDiseaseInfo(disease);
+                    
+                    diseaseCard.innerHTML = `
+                        <div class="flex items-start space-x-6">
+                            <div class="flex-shrink-0">
+                                <div class="w-20 h-20 bg-${diseaseInfo.color}-500/20 rounded-2xl flex items-center justify-center">
+                                    <i class="fas fa-${diseaseInfo.icon} text-${diseaseInfo.color}-400 text-3xl"></i>
+                                </div>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h4 class="text-white font-bold text-2xl mb-2">${disease.replace(/\b\w/g, l => l.toUpperCase())}</h4>
+                                    <div class="flex items-center space-x-3">
+                                        <span class="px-4 py-2 bg-${riskColor}-500/20 text-${riskColor}-200 rounded-xl text-sm font-semibold border border-${riskColor}-500/30">
+                                            ${diseaseRiskLevel} Risk
+                                        </span>
+                                        <div class="text-center">
+                                            <div class="text-white font-bold text-3xl">${count}</div>
+                                            <div class="text-${riskColor}-200 text-sm">SNPs</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="text-blue-200 text-lg mb-4">${count} associated genetic variant${count > 1 ? 's' : ''} found in your genome</p>
+                                <div class="bg-white/5 rounded-xl p-6">
+                                    <h5 class="text-white font-semibold text-lg mb-3 flex items-center">
+                                        <i class="fas fa-info-circle mr-2 text-blue-400"></i>
+                                        What This Means
+                                    </h5>
+                                    <p class="text-purple-200 leading-relaxed">
+                                        ${getDiseaseDescription(disease, count)}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    diseaseList.appendChild(diseaseCard);
+                });
+            }
+        }
+
+        function getDiseaseInfo(disease) {
+            const diseaseLower = disease.toLowerCase();
+            if (diseaseLower.includes('breast') || diseaseLower.includes('cancer')) {
+                return { icon: 'female', color: 'pink' };
+            } else if (diseaseLower.includes('cardiovascular') || diseaseLower.includes('coronary') || diseaseLower.includes('heart')) {
+                return { icon: 'heart', color: 'red' };
+            } else if (diseaseLower.includes('diabetes')) {
+                return { icon: 'tint', color: 'blue' };
+            } else if (diseaseLower.includes('alzheimer') || diseaseLower.includes('dementia')) {
+                return { icon: 'brain', color: 'purple' };
+            } else if (diseaseLower.includes('obesity') || diseaseLower.includes('weight')) {
+                return { icon: 'weight', color: 'orange' };
+            } else if (diseaseLower.includes('hypertension') || diseaseLower.includes('blood pressure')) {
+                return { icon: 'heartbeat', color: 'red' };
+            } else if (diseaseLower.includes('inflammation')) {
+                return { icon: 'fire', color: 'orange' };
+            } else if (diseaseLower.includes('autoimmune')) {
+                return { icon: 'shield-alt', color: 'yellow' };
+            } else if (diseaseLower.includes('osteoporosis')) {
+                return { icon: 'bone', color: 'gray' };
+            } else {
+                return { icon: 'dna', color: 'blue' };
+            }
+        }
+
+        function getDiseaseDescription(disease, count) {
+            const descriptions = {
+                "cardiovascular disease": `You have ${count} genetic variant${count > 1 ? 's' : ''} associated with cardiovascular health. Focus on heart-healthy lifestyle choices including regular exercise, a balanced diet low in saturated fats, and stress management.`,
+                "diabetes": `Your genetic profile shows ${count} variant${count > 1 ? 's' : ''} related to glucose metabolism. Monitor your blood sugar levels and maintain a diet rich in complex carbohydrates, fiber, and lean proteins.`,
+                "cancer": `Genetic analysis revealed ${count} variant${count > 1 ? 's' : ''} associated with cancer risk. Regular screenings and preventive lifestyle measures are recommended.`,
+                "alzheimer's disease": `You carry ${count} genetic variant${count > 1 ? 's' : ''} linked to cognitive health. Focus on brain-healthy activities, social engagement, and a diet rich in antioxidants.`,
+                "obesity": `Your genome contains ${count} variant${count > 1 ? 's' : ''} related to weight management. Personalized nutrition and regular physical activity are particularly important.`,
+                "hypertension": `Genetic analysis shows ${count} variant${count > 1 ? 's' : ''} associated with blood pressure regulation. Monitor your blood pressure and reduce sodium intake.`,
+                "autoimmune disease": `You have ${count} genetic variant${count > 1 ? 's' : ''} related to immune system function. Focus on anti-inflammatory foods and stress reduction.`,
+                "osteoporosis": `Your genetic profile includes ${count} variant${count > 1 ? 's' : ''} affecting bone health. Ensure adequate calcium and vitamin D intake, along with weight-bearing exercise.`
+            };
+            
+            const diseaseLower = disease.toLowerCase();
+            for (const [key, description] of Object.entries(descriptions)) {
+                if (diseaseLower.includes(key)) {
+                    return description;
+                }
+            }
+            
+            return `You have ${count} genetic variant${count > 1 ? 's' : ''} associated with ${disease.toLowerCase()}. This information can help guide personalized health strategies.`;
+        }
+
+        function displayNutritionPlans(nutritionPlans) {
+            const container = document.getElementById('nutritionPlans');
+            container.innerHTML = '';
+
+            if (Object.keys(nutritionPlans).length === 0) {
+                const noPlanCard = document.createElement('div');
+                noPlanCard.className = 'glass-effect rounded-3xl p-12 text-center';
+                noPlanCard.innerHTML = `
+                    <div class="w-24 h-24 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-apple-alt text-blue-400 text-4xl"></i>
+                    </div>
+                    <h3 class="text-white text-2xl font-bold mb-4">No Analysis Yet</h3>
+                    <p class="text-blue-200 text-lg">Upload your genetic data first to receive personalized nutrition and exercise recommendations</p>
+                `;
+                container.appendChild(noPlanCard);
+                return;
+            }
+
+            // Group identical plans (same age_group, exercise_plan, and meal_pattern)
+            const groups = {};
+            Object.entries(nutritionPlans).forEach(([disease, plan]) => {
+                const key = JSON.stringify({
+                    age_group: plan.age_group,
+                    exercise_plan: plan.exercise_plan,
+                    meal_pattern: plan.meal_pattern,
+                    general_advice: plan.general_advice
+                });
+                if (!groups[key]) {
+                    groups[key] = { diseases: [], plan, maxRisk: plan.risk_level };
+                }
+                groups[key].diseases.push(disease);
+                // Track the highest risk level among grouped diseases
+                const rank = { 'low': 0, 'medium': 1, 'high': 2 };
+                const cur = (groups[key].maxRisk || 'Low').toLowerCase();
+                const nxt = (plan.risk_level || 'Low').toLowerCase();
+                groups[key].maxRisk = (rank[nxt] > rank[cur]) ? plan.risk_level : groups[key].maxRisk;
+            });
+
+            let extrasCandidate = null;
+            Object.values(groups).forEach(({ diseases, plan, maxRisk }) => {
+                const planCard = document.createElement('div');
+                planCard.className = 'glass-effect rounded-3xl p-10 mb-10 disease-card';
+                
+                // Get age-specific exercise recommendations
+                const ageGroup = plan.age_group || 'young_adult';
+                const exercisePlan = getAgeSpecificExercisePlan(diseases[0], ageGroup, plan.exercise_plan);
+                
+                planCard.innerHTML = `
+                    <div class="mb-8">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 class="text-3xl font-bold text-white mb-2">${diseases.map(d => d.replace(/\b\w/g, l => l.toUpperCase())).join(' • ')}</h3>
+                                <p class="text-blue-200 text-lg">Personalized for ${ageGroup.replace('_', ' ')} age group</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="px-4 py-2 bg-${(maxRisk || 'low').toLowerCase() === 'high' ? 'red' : (maxRisk || 'low').toLowerCase() === 'medium' ? 'yellow' : 'green'}-500/20 text-${(maxRisk || 'low').toLowerCase() === 'high' ? 'red' : (maxRisk || 'low').toLowerCase() === 'medium' ? 'yellow' : 'green'}-200 rounded-xl text-sm font-semibold border border-${(maxRisk || 'low').toLowerCase() === 'high' ? 'red' : (maxRisk || 'low').toLowerCase() === 'medium' ? 'yellow' : 'green'}-500/30">
+                                    ${maxRisk || 'Low'} Risk
+                                </span>
+                            </div>
+                        </div>
+                        <div class="bg-white/5 rounded-2xl p-6">
+                            <p class="text-white text-lg leading-relaxed">${plan.general_advice}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                        <div class="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-2xl p-6">
+                            <h4 class="text-green-200 font-bold text-xl mb-6 flex items-center">
+                                <i class="fas fa-check-circle mr-3"></i> Priority Foods to Include
+                            </h4>
+                            <div class="space-y-4">
+                                ${plan.foods_to_include.slice(0, 8).map(food => `
+                                    <div class="bg-green-500/20 text-green-100 px-4 py-3 rounded-xl text-sm flex items-start">
+                                        <i class="fas fa-leaf mr-3 mt-1 text-green-300"></i>
+                                        <div>
+                                            <div class="font-semibold">${getSpecificFoodRecommendation(food, diseases[0])}</div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                                ${plan.foods_to_include.length > 8 ? `
+                                    <div class="text-green-200 text-sm italic text-center mt-4">
+                                        +${plan.foods_to_include.length - 8} more recommendations
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gradient-to-br from-red-500/10 to-pink-500/10 border border-red-500/20 rounded-2xl p-6">
+                            <h4 class="text-red-200 font-bold text-xl mb-6 flex items-center">
+                                <i class="fas fa-times-circle mr-3"></i> Foods to Limit/Avoid
+                            </h4>
+                            <div class="space-y-4">
+                                ${plan.foods_to_avoid.slice(0, 8).map(food => `
+                                    <div class="bg-red-500/20 text-red-100 px-4 py-3 rounded-xl text-sm flex items-start">
+                                        <i class="fas fa-exclamation-triangle mr-3 mt-1 text-red-300"></i>
+                                        <div>
+                                            <div class="font-semibold">${getSpecificAvoidanceReason(food, diseases[0])}</div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                                ${plan.foods_to_avoid.length > 8 ? `
+                                    <div class="text-red-200 text-sm italic text-center mt-4">
+                                        +${plan.foods_to_avoid.length - 8} more items to limit
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 border border-blue-500/20 rounded-2xl p-6">
+                            <h4 class="text-blue-200 font-bold text-xl mb-6 flex items-center">
+                                <i class="fas fa-pills mr-3"></i> Recommended Supplements
+                            </h4>
+                            <div class="space-y-4">
+                                ${plan.supplements.map(supplement => `
+                                    <div class="bg-blue-500/20 text-blue-100 px-4 py-3 rounded-xl text-sm flex items-start">
+                                        <i class="fas fa-capsules mr-3 mt-1 text-blue-300"></i>
+                                        <div>
+                                            <div class="font-semibold">${getSupplementDetails(supplement, diseases[0])}</div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Age-Specific Exercise Plan -->
+                    <div class="bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/20 rounded-2xl p-8 mb-8">
+                        <h4 class="text-purple-200 font-bold text-2xl mb-6 flex items-center">
+                            <i class="fas fa-dumbbell mr-3"></i> Age-Appropriate Exercise Plan (${ageGroup.replace('_', ' ').toUpperCase()})
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="space-y-6">
+                                <div class="bg-white/10 rounded-xl p-6">
+                                    <h5 class="text-white font-bold text-lg mb-3 flex items-center">
+                                        <i class="fas fa-heart mr-2 text-red-400"></i> Cardiovascular Exercise
+                                    </h5>
+                                    <p class="text-purple-200 leading-relaxed">${exercisePlan.cardio}</p>
+                                    <div class="mt-3 text-sm text-purple-300">
+                                        <strong>Intensity:</strong> ${exercisePlan.intensity}
+                                    </div>
+                                </div>
+                                <div class="bg-white/10 rounded-xl p-6">
+                                    <h5 class="text-white font-bold text-lg mb-3 flex items-center">
+                                        <i class="fas fa-dumbbell mr-2 text-blue-400"></i> Strength Training
+                                    </h5>
+                                    <p class="text-purple-200 leading-relaxed">${exercisePlan.strength}</p>
+                                </div>
+                            </div>
+                            <div class="space-y-6">
+                                <div class="bg-white/10 rounded-xl p-6">
+                                    <h5 class="text-white font-bold text-lg mb-3 flex items-center">
+                                        <i class="fas fa-yoga mr-2 text-green-400"></i> Flexibility & Balance
+                                    </h5>
+                                    <p class="text-purple-200 leading-relaxed">${exercisePlan.flexibility}</p>
+                                </div>
+                                <div class="bg-white/10 rounded-xl p-6">
+                                    <h5 class="text-white font-bold text-lg mb-3 flex items-center">
+                                        <i class="fas fa-exclamation-triangle mr-2 text-yellow-400"></i> Important Precautions
+                                    </h5>
+                                    <p class="text-purple-200 leading-relaxed">${exercisePlan.precautions}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Meal Pattern & Age Recommendations -->
+                    <div class="bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border border-yellow-500/20 rounded-2xl p-8">
+                        <h4 class="text-yellow-200 font-bold text-2xl mb-6 flex items-center">
+                            <i class="fas fa-utensils mr-3"></i> Meal Pattern & Daily Recommendations
+                        </h4>
+                        <p class="text-yellow-100 text-lg mb-6 leading-relaxed">${plan.meal_pattern}</p>
+                        
+                        ${plan.age_recommendations ? `
+                        <div class="bg-white/10 rounded-xl p-6">
+                            <h5 class="text-white font-bold text-lg mb-4 flex items-center">
+                                <i class="fas fa-chart-line mr-2 text-blue-400"></i> Age-Specific Nutritional Targets (${ageGroup.replace('_', ' ').toUpperCase()})
+                            </h5>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="space-y-3">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-white font-medium">Calories:</span>
+                                        <span class="text-blue-200 font-semibold">${plan.age_recommendations.calories || 'Consult healthcare provider'}</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-white font-medium">Protein:</span>
+                                        <span class="text-blue-200 font-semibold">${plan.age_recommendations.protein || '0.8-1.2g per kg body weight'}</span>
+                                    </div>
+                                </div>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-white font-medium">Calcium:</span>
+                                        <span class="text-blue-200 font-semibold">${plan.age_recommendations.calcium || '1000-1200mg daily'}</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-white font-medium">Vitamin D:</span>
+                                        <span class="text-blue-200 font-semibold">${plan.age_recommendations.vitamin_d || '600-800 IU daily'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="mt-8 bg-gradient-to-r from-gray-500/10 to-slate-500/10 border border-gray-500/20 rounded-2xl p-6">
+                        <p class="text-gray-300 text-sm text-center">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            This nutrition and exercise plan is for informational purposes only. Please consult with a healthcare provider or registered dietitian before making significant dietary or exercise changes.
+                        </p>
+                    </div>
+                `;
+                container.appendChild(planCard);
+
+                // choose strongest plan for one-time global sections
+                const rank = { 'low': 0, 'medium': 1, 'high': 2 };
+                if (!extrasCandidate || (rank[(maxRisk || 'low').toLowerCase()] > rank[(extrasCandidate.maxRisk || 'low').toLowerCase()])) {
+                    extrasCandidate = { diseases, plan, maxRisk, exercisePlan };
+                }
+            });
+
+            // Render exercise + meal pattern only once using the strongest plan
+            if (extrasCandidate) {
+                const { plan, exercisePlan } = extrasCandidate;
+                const ageGroup = plan.age_group || 'young_adult';
+                const extras = document.createElement('div');
+                extras.className = 'glass-effect rounded-3xl p-10 disease-card';
+                extras.innerHTML = `
+                    <!-- Age-Specific Exercise Plan (single) -->
+                    <div class="bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/20 rounded-2xl p-8 mb-8">
+                        <h4 class="text-purple-200 font-bold text-2xl mb-6 flex items-center">
+                            <i class="fas fa-dumbbell mr-3"></i> Age-Appropriate Exercise Plan (${ageGroup.replace('_', ' ').toUpperCase()})
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="space-y-6">
+                                <div class="bg-white/10 rounded-xl p-6">
+                                    <h5 class="text-white font-bold text-lg mb-3 flex items-center">
+                                        <i class="fas fa-heart mr-2 text-red-400"></i> Cardiovascular Exercise
+                                    </h5>
+                                    <p class="text-purple-200 leading-relaxed">${exercisePlan.cardio}</p>
+                                    <div class="mt-3 text-sm text-purple-300">
+                                        <strong>Intensity:</strong> ${exercisePlan.intensity}
+                                    </div>
+                                </div>
+                                <div class="bg-white/10 rounded-xl p-6">
+                                    <h5 class="text-white font-bold text-lg mb-3 flex items-center">
+                                        <i class="fas fa-dumbbell mr-2 text-blue-400"></i> Strength Training
+                                    </h5>
+                                    <p class="text-purple-200 leading-relaxed">${exercisePlan.strength}</p>
+                                </div>
+                            </div>
+                            <div class="space-y-6">
+                                <div class="bg-white/10 rounded-xl p-6">
+                                    <h5 class="text-white font-bold text-lg mb-3 flex items-center">
+                                        <i class="fas fa-yoga mr-2 text-green-400"></i> Flexibility & Balance
+                                    </h5>
+                                    <p class="text-purple-200 leading-relaxed">${exercisePlan.flexibility}</p>
+                                </div>
+                                <div class="bg-white/10 rounded-xl p-6">
+                                    <h5 class="text-white font-bold text-lg mb-3 flex items-center">
+                                        <i class="fas fa-exclamation-triangle mr-2 text-yellow-400"></i> Important Precautions
+                                    </h5>
+                                    <p class="text-purple-200 leading-relaxed">${exercisePlan.precautions}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Meal Pattern & Age Recommendations (single) -->
+                    <div class="bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border border-yellow-500/20 rounded-2xl p-8">
+                        <h4 class="text-yellow-200 font-bold text-2xl mb-6 flex items-center">
+                            <i class="fas fa-utensils mr-3"></i> Meal Pattern & Daily Recommendations
+                        </h4>
+                        <p class="text-yellow-100 text-lg mb-6 leading-relaxed">${plan.meal_pattern}</p>
+                        ${plan.age_recommendations ? `
+                        <div class="bg-white/10 rounded-xl p-6">
+                            <h5 class="text-white font-bold text-lg mb-4 flex items-center">
+                                <i class="fas fa-chart-line mr-2 text-blue-400"></i> Age-Specific Nutritional Targets (${ageGroup.replace('_', ' ').toUpperCase()})
+                            </h5>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="space-y-3">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-white font-medium">Calories:</span>
+                                        <span class="text-blue-200 font-semibold">${plan.age_recommendations.calories || 'Consult healthcare provider'}</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-white font-medium">Protein:</span>
+                                        <span class="text-blue-200 font-semibold">${plan.age_recommendations.protein || '0.8-1.2g per kg body weight'}</span>
+                                    </div>
+                                </div>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-white font-medium">Calcium:</span>
+                                        <span class="text-blue-200 font-semibold">${plan.age_recommendations.calcium || '1000-1200mg daily'}</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-white font-medium">Vitamin D:</span>
+                                        <span class="text-blue-200 font-semibold">${plan.age_recommendations.vitamin_d || '600-800 IU daily'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>`;
+                container.appendChild(extras);
+            }
+        }
+
+        function getSpecificFoodRecommendation(food, disease) {
+            const diseaseLower = disease.toLowerCase();
+            if (diseaseLower.includes('cardiovascular') || diseaseLower.includes('heart')) {
+                return `${food} - Excellent for heart health and reducing inflammation`;
+            } else if (diseaseLower.includes('diabetes')) {
+                return `${food} - Helps stabilize blood sugar and improve insulin sensitivity`;
+            } else if (diseaseLower.includes('cancer')) {
+                return `${food} - Rich in antioxidants and cancer-fighting compounds`;
+            } else if (diseaseLower.includes('alzheimer') || diseaseLower.includes('dementia')) {
+                return `${food} - Supports brain health and cognitive function`;
+            } else if (diseaseLower.includes('obesity')) {
+                return `${food} - Promotes satiety and supports healthy weight management`;
+            } else if (diseaseLower.includes('hypertension')) {
+                return `${food} - Helps regulate blood pressure naturally`;
+            } else if (diseaseLower.includes('inflammation')) {
+                return `${food} - Natural anti-inflammatory properties`;
+            } else {
+                return `${food} - Provides essential nutrients for overall health`;
+            }
+        }
+
+        function getSpecificAvoidanceReason(food, disease) {
+            const diseaseLower = disease.toLowerCase();
+            if (diseaseLower.includes('cardiovascular') || diseaseLower.includes('heart')) {
+                return `${food} - Can contribute to heart disease and inflammation`;
+            } else if (diseaseLower.includes('diabetes')) {
+                return `${food} - May cause blood sugar spikes and insulin resistance`;
+            } else if (diseaseLower.includes('cancer')) {
+                return `${food} - Contains compounds that may promote cancer growth`;
+            } else if (diseaseLower.includes('obesity')) {
+                return `${food} - High in calories and may contribute to weight gain`;
+            } else if (diseaseLower.includes('hypertension')) {
+                return `${food} - High sodium content can raise blood pressure`;
+            } else if (diseaseLower.includes('inflammation')) {
+                return `${food} - May trigger inflammatory responses in the body`;
+            } else {
+                return `${food} - May not align with your health goals`;
+            }
+        }
+
+        function getSupplementDetails(supplement, disease) {
+            const diseaseLower = disease.toLowerCase();
+            if (diseaseLower.includes('cardiovascular') || diseaseLower.includes('heart')) {
+                return `${supplement} - Supports cardiovascular health and circulation`;
+            } else if (diseaseLower.includes('diabetes')) {
+                return `${supplement} - Helps regulate blood sugar and metabolism`;
+            } else if (diseaseLower.includes('cancer')) {
+                return `${supplement} - Provides antioxidant protection and immune support`;
+            } else if (diseaseLower.includes('alzheimer') || diseaseLower.includes('dementia')) {
+                return `${supplement} - Supports brain function and cognitive health`;
+            } else if (diseaseLower.includes('obesity')) {
+                return `${supplement} - Aids in metabolism and weight management`;
+            } else if (diseaseLower.includes('hypertension')) {
+                return `${supplement} - Helps maintain healthy blood pressure`;
+            } else if (diseaseLower.includes('inflammation')) {
+                return `${supplement} - Natural anti-inflammatory support`;
+            } else {
+                return `${supplement} - General health and wellness support`;
+            }
+        }
+
+        function getDailyRecommendations(disease) {
+            const diseaseLower = disease.toLowerCase();
+            if (diseaseLower.includes('cardiovascular') || diseaseLower.includes('heart')) {
+                return [
+                    'Aim for 7-9 hours of quality sleep',
+                    'Practice stress management techniques',
+                    'Monitor blood pressure regularly',
+                    'Stay hydrated with 8-10 glasses of water'
+                ];
+            } else if (diseaseLower.includes('diabetes')) {
+                return [
+                    'Monitor blood sugar levels regularly',
+                    'Eat at consistent times throughout the day',
+                    'Include protein with every meal',
+                    'Stay active with regular exercise'
+                ];
+            } else if (diseaseLower.includes('cancer')) {
+                return [
+                    'Maintain a healthy body weight',
+                    'Limit alcohol consumption',
+                    'Avoid tobacco products',
+                    'Get regular health screenings'
+                ];
+            } else if (diseaseLower.includes('obesity')) {
+                return [
+                    'Track your food intake and activity',
+                    'Set realistic weight loss goals',
+                    'Get adequate sleep (7-9 hours)',
+                    'Find enjoyable physical activities'
+                ];
+            } else {
+                return [
+                    'Maintain a balanced diet',
+                    'Stay physically active',
+                    'Get adequate sleep',
+                    'Manage stress effectively'
+                ];
+            }
+        }
+
+        function getLifestyleTips(disease) {
+            const diseaseLower = disease.toLowerCase();
+            if (diseaseLower.includes('cardiovascular') || diseaseLower.includes('heart')) {
+                return [
+                    'Quit smoking if you smoke',
+                    'Limit alcohol to moderate amounts',
+                    'Practice deep breathing exercises',
+                    'Consider meditation or yoga'
+                ];
+            } else if (diseaseLower.includes('diabetes')) {
+                return [
+                    'Wear comfortable, supportive shoes',
+                    'Check feet daily for any issues',
+                    'Keep medical appointments',
+                    'Learn to read food labels'
+                ];
+            } else if (diseaseLower.includes('cancer')) {
+                return [
+                    'Protect skin from sun exposure',
+                    'Maintain a healthy weight',
+                    'Stay up to date with vaccinations',
+                    'Know your family medical history'
+                ];
+            } else if (diseaseLower.includes('obesity')) {
+                return [
+                    'Find a support group or buddy',
+                    'Keep healthy snacks readily available',
+                    'Plan meals in advance',
+                    'Use smaller plates and bowls'
+                ];
+            } else {
+                return [
+                    'Stay socially connected',
+                    'Practice good sleep hygiene',
+                    'Limit screen time before bed',
+                    'Find hobbies you enjoy'
+                ];
+            }
+        }
+
+        function getAgeSpecificExercisePlan(disease, ageGroup, basePlan) {
+            // Age-specific exercise modifications
+            const ageModifications = {
+                'adolescent': {
+                    cardio: `${basePlan.cardio} - Focus on fun activities like team sports, dancing, and swimming. Build endurance gradually.`,
+                    strength: `${basePlan.strength} - Use bodyweight exercises and light resistance bands. Focus on proper form and technique.`,
+                    flexibility: `${basePlan.flexibility} - Include dynamic stretching before activities and static stretching after.`,
+                    intensity: 'Moderate to vigorous intensity, 60-75% of max heart rate',
+                    precautions: 'Ensure proper warm-up, focus on technique over weight, avoid overtraining, get adequate rest between sessions.'
+                },
+                'young_adult': {
+                    cardio: `${basePlan.cardio} - Can handle higher intensity workouts. Include HIIT and endurance training.`,
+                    strength: `${basePlan.strength} - Progressive overload with weights. Focus on compound movements and muscle balance.`,
+                    flexibility: `${basePlan.flexibility} - Include mobility work and dynamic stretching. Consider yoga or pilates.`,
+                    intensity: 'Moderate to high intensity, 65-80% of max heart rate',
+                    precautions: 'Listen to your body, maintain proper form, allow adequate recovery, stay hydrated during intense sessions.'
+                },
+                'middle_aged': {
+                    cardio: `${basePlan.cardio} - Moderate intensity focus. Include low-impact options like cycling and swimming.`,
+                    strength: `${basePlan.strength} - Maintain muscle mass with regular resistance training. Focus on functional movements.`,
+                    flexibility: `${basePlan.flexibility} - Daily stretching routine. Include balance exercises to prevent falls.`,
+                    intensity: 'Moderate intensity, 60-70% of max heart rate',
+                    precautions: 'Warm up properly, avoid sudden movements, monitor heart rate, include rest days, consider joint health.'
+                },
+                'senior': {
+                    cardio: `${basePlan.cardio} - Low to moderate intensity. Walking, gentle swimming, and chair exercises are excellent.`,
+                    strength: `${basePlan.strength} - Light weights and resistance bands. Focus on maintaining functional strength.`,
+                    flexibility: `${basePlan.flexibility} - Gentle stretching and balance exercises. Tai chi and gentle yoga are beneficial.`,
+                    intensity: 'Low to moderate intensity, 50-65% of max heart rate',
+                    precautions: 'Start slowly, focus on balance and coordination, avoid high-impact activities, consult doctor before starting, include rest periods.'
+                }
+            };
+            
+            return ageModifications[ageGroup] || ageModifications['young_adult'];
+        }
+
+        // Chat functionality
+        let isSending = false;
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            if (isSending) return;
+            
+            // Add user message to chat
+            addMessageToChat('user', message);
+            input.value = '';
+            // sending state
+            isSending = true;
+            const sendBtn = document.getElementById('sendBtn');
+            sendBtn.disabled = true;
+            document.getElementById('sendBtnText').classList.add('hidden');
+            document.getElementById('sendBtnLoading').classList.remove('hidden');
+            
+            try {
+                // Use genomic context if available
+                let response;
+                if (window.genomicAnalysisResults) {
+                    response = await fetch('/chat/genomic', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            message: message,
+                            genomic_context: window.genomicAnalysisResults
+                        })
+                    });
+                } else {
+                    response = await fetch('/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ message: message })
+                    });
+                }
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    addMessageToChat('ai', data.response);
+                } else {
+                    addMessageToChat('ai', 'Sorry, I encountered an error. Please try again.');
+                }
+            } catch (error) {
+                addMessageToChat('ai', 'Sorry, I\'m having trouble connecting. Please check your internet connection.');
+            } finally {
+                isSending = false;
+                sendBtn.disabled = false;
+                document.getElementById('sendBtnText').classList.remove('hidden');
+                document.getElementById('sendBtnLoading').classList.add('hidden');
+            }
+        }
+
+        function addMessageToChat(sender, message) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            
+            if (sender === 'user') {
+                messageDiv.className = 'bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-2xl p-6 max-w-4xl ml-auto';
+                messageDiv.innerHTML = `
+                    <div class="flex items-start space-x-3 justify-end">
+                        <div class="flex-1 text-right">
+                            <p class="text-white text-lg leading-relaxed">${message}</p>
+                        </div>
+                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-user text-white"></i>
+                        </div>
+                    </div>
+                `;
+            } else {
+                messageDiv.className = 'bg-white/10 rounded-2xl p-6 max-w-4xl';
+                messageDiv.innerHTML = `
+                    <div class="flex items-start space-x-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-robot text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="text-white text-lg leading-relaxed">${formatAIResponse(message)}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function formatAIResponse(message) {
+            // Convert paragraphs to bullet points for better readability
+            if (message.includes('\n\n') || message.includes('**')) {
+                // Split by double newlines or markdown headers
+                const sections = message.split(/\n\n|\*\*/);
+                let formatted = '';
+                
+                sections.forEach((section, index) => {
+                    section = section.trim();
+                    if (!section) return;
+                    
+                    // Check if it's a numbered or bulleted list
+                    if (section.match(/^\d+\.\s*\*\*/) || section.match(/^\*\*/)) {
+                        // Already formatted list, keep as is
+                        formatted += section + '<br><br>';
+                    } else if (section.match(/^\d+\./)) {
+                        // Numbered list, format with bullets
+                        const lines = section.split('\n');
+                        formatted += lines.map(line => {
+                            if (line.match(/^\d+\./)) {
+                                return `• ${line.replace(/^\d+\.\s*/, '')}`;
+                            }
+                            return line;
+                        }).join('<br>') + '<br><br>';
+                    } else if (section.includes(':')) {
+                        // Section with colon, format as header + bullet points
+                        const [header, ...content] = section.split(':');
+                        if (content.length > 0) {
+                            formatted += `<strong class="text-blue-200">${header}:</strong><br>`;
+                            const points = content.join(':').split('\n').filter(p => p.trim());
+                            points.forEach(point => {
+                                if (point.trim()) {
+                                    formatted += `• ${point.trim()}<br>`;
+                                }
+                            });
+                        } else {
+                            formatted += `<strong class="text-blue-200">${section}</strong><br>`;
+                        }
+                        formatted += '<br>';
+                    } else {
+                        // Regular text, add bullet if it's a complete thought
+                        if (section.length > 50) {
+                            formatted += `• ${section}<br><br>`;
+                        } else {
+                            formatted += section + '<br><br>';
+                        }
+                    }
+                });
+                
+                return formatted;
+            }
+            
+            // Simple formatting for short responses
+            return message.replace(/\n/g, '<br>');
+        }
+
+        function newChatSession() {
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.innerHTML = `
+                <div class="bg-white/10 rounded-2xl p-6 max-w-4xl">
+                    <div class="flex items-start space-x-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-robot text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="text-white text-lg leading-relaxed">Hello! I'm your GenoRisk AI assistant, specialized in genomic medicine and personalized healthcare. I can help you understand your genetic analysis results, answer health questions, and provide personalized recommendations. How can I assist you today?</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Clear genomic context for new session
+            window.genomicAnalysisResults = null;
+        }
+
+        function clearChat() {
+            newChatSession();
+        }
+
+        // Enter key support for chat
+        document.getElementById('chatInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        function prefill(text) {
+            document.getElementById('chatInput').value = text;
+            document.getElementById('chatInput').focus();
+        }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            showTab('upload');
+        });
+    </script>
+</body>
+</html>

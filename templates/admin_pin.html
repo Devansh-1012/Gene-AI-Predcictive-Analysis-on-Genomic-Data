@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GenoRisk AI — Admin PIN Verification</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+
+        /* Same background as login page */
+        .dna-animation {
+            background: linear-gradient(-45deg, #1e3a8a, #3b82f6, #8b5cf6, #ec4899, #f59e0b);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+        @keyframes gradientShift {
+            0%   { background-position: 0% 50%; }
+            50%  { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .glass-effect {
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+        .pulse-glow { animation: pulseGlow 2s ease-in-out infinite alternate; }
+        @keyframes pulseGlow {
+            from { box-shadow: 0 0 20px rgba(245,158,11,0.5); }
+            to   { box-shadow: 0 0 30px rgba(245,158,11,0.9); }
+        }
+        .slide-in {
+            animation: slideIn 0.5s ease-out;
+        }
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to   { transform: translateY(0);    opacity: 1; }
+        }
+
+        /* PIN box inputs */
+        .pin-box {
+            width: 56px;
+            height: 64px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            color: white;
+            font-size: 26px;
+            font-weight: 700;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.3s, background 0.3s;
+            caret-color: transparent;
+        }
+        .pin-box:focus {
+            border-color: rgba(245,158,11,0.9);
+            background: rgba(255,255,255,0.18);
+        }
+        .pin-box.filled {
+            border-color: rgba(245,158,11,0.6);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        .alert-error {
+            background: rgba(239,68,68,0.2);
+            border: 1px solid rgba(239,68,68,0.4);
+            color: #fca5a5;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen dna-animation flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="glass-effect p-5">
+        <div class="container mx-auto flex items-center space-x-3">
+            <div class="w-11 h-11 bg-white rounded-2xl flex items-center justify-center pulse-glow">
+                <i class="fas fa-dna text-blue-600 text-lg"></i>
+            </div>
+            <div>
+                <h1 class="text-white font-bold text-xl">GenoRisk AI</h1>
+                <p class="text-blue-200 text-xs">Admin Authentication</p>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main card -->
+    <div class="flex-1 flex items-center justify-center px-4 py-10">
+        <div class="w-full max-w-sm slide-in">
+            <div class="glass-effect rounded-3xl p-8">
+
+                <!-- Icon + title -->
+                <div class="text-center mb-7">
+                    <div class="w-16 h-16 bg-gradient-to-br from-yellow-500 to-red-500 rounded-2xl
+                                flex items-center justify-center mx-auto mb-3 pulse-glow">
+                        <i class="fas fa-lock text-white text-2xl"></i>
+                    </div>
+                    <h2 class="text-white font-bold text-2xl">Admin Verification</h2>
+                    <p class="text-yellow-200 text-sm mt-1">
+                        Step 2 of 2 — Enter your 4-digit PIN
+                    </p>
+                    <!-- MFA explanation for academic evaluators -->
+                    <p class="text-white/30 text-xs mt-2">
+                        Multi-Factor Authentication (MFA) — second factor
+                    </p>
+                </div>
+
+                <!-- Step indicator -->
+                <div class="flex justify-center gap-3 mb-6">
+                    <div class="flex items-center gap-1">
+                        <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
+                             style="background: rgba(16,185,129,0.8); color: white;">
+                            <i class="fas fa-check text-xs"></i>
+                        </div>
+                        <span class="text-green-300 text-xs">Password</span>
+                    </div>
+                    <div class="w-8 h-px bg-white/20 self-center"></div>
+                    <div class="flex items-center gap-1">
+                        <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
+                             style="background: rgba(245,158,11,0.8); color: white;">2</div>
+                        <span class="text-yellow-300 text-xs font-semibold">PIN</span>
+                    </div>
+                </div>
+
+                <!-- Error message -->
+                {% if error %}
+                <div class="alert-error">
+                    <i class="fas fa-exclamation-circle mr-2"></i>{{ error }}
+                </div>
+                {% endif %}
+
+                <!-- PIN form -->
+                <form method="POST" action="/admin-pin" id="pinForm">
+                    <!-- Hidden input carries the full 4-digit PIN -->
+                    <input type="hidden" name="pin" id="pinValue">
+
+                    <!-- 4 individual digit boxes -->
+                    <div class="flex justify-center gap-3 mb-6">
+                        <input type="password" class="pin-box" id="p1" maxlength="1"
+                               inputmode="numeric" pattern="[0-9]"
+                               oninput="pinInput(this, null, 'p2')" autocomplete="off">
+                        <input type="password" class="pin-box" id="p2" maxlength="1"
+                               inputmode="numeric" pattern="[0-9]"
+                               oninput="pinInput(this, 'p1', 'p3')" autocomplete="off">
+                        <input type="password" class="pin-box" id="p3" maxlength="1"
+                               inputmode="numeric" pattern="[0-9]"
+                               oninput="pinInput(this, 'p2', 'p4')" autocomplete="off">
+                        <input type="password" class="pin-box" id="p4" maxlength="1"
+                               inputmode="numeric" pattern="[0-9]"
+                               oninput="pinInput(this, 'p3', null)" autocomplete="off">
+                    </div>
+
+                    <button type="submit" class="btn-primary" id="submitBtn" disabled>
+                        <i class="fas fa-shield-alt mr-2"></i>Verify PIN
+                    </button>
+                </form>
+
+                <p class="text-center text-white/30 text-xs mt-5">
+                    Default PIN is <strong class="text-white/50">1234</strong> —
+                    change it from the Admin Dashboard after login.
+                </p>
+
+                <!-- Back to login -->
+                <div class="text-center mt-4">
+                    <a href="/logout" class="text-white/40 hover:text-white text-xs transition-colors">
+                        <i class="fas fa-arrow-left mr-1"></i>Back to Login
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Move focus to next box and update hidden PIN value
+        function pinInput(current, prevId, nextId) {
+            const val = current.value;
+
+            // Only allow digits
+            if (val && !/^[0-9]$/.test(val)) {
+                current.value = '';
+                return;
+            }
+
+            // Add/remove filled style
+            current.classList.toggle('filled', val.length > 0);
+
+            // Move focus forward
+            if (val && nextId) {
+                document.getElementById(nextId).focus();
+            }
+
+            // Collect all 4 digits
+            updatePin();
+        }
+
+        function updatePin() {
+            const digits = ['p1','p2','p3','p4'].map(id =>
+                document.getElementById(id).value
+            );
+            const pin = digits.join('');
+            document.getElementById('pinValue').value = pin;
+            // Enable submit only when all 4 digits entered
+            document.getElementById('submitBtn').disabled = (pin.length < 4);
+        }
+
+        // Handle backspace to go back to previous box
+        ['p1','p2','p3','p4'].forEach((id, index) => {
+            document.getElementById(id).addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' && !this.value && index > 0) {
+                    const prevId = ['p1','p2','p3','p4'][index - 1];
+                    document.getElementById(prevId).focus();
+                }
+            });
+        });
+
+        // Auto-submit when 4th digit entered
+        document.getElementById('p4').addEventListener('input', function() {
+            if (this.value) {
+                updatePin();
+                setTimeout(() => {
+                    if (document.getElementById('pinValue').value.length === 4) {
+                        document.getElementById('pinForm').submit();
+                    }
+                }, 150);
+            }
+        });
+
+        // Focus first box on load
+        document.getElementById('p1').focus();
+    </script>
+</body>
+</html>

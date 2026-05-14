@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GenoRisk AI — Secure Access</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+
+        .dna-animation {
+            background: linear-gradient(-45deg, #1e3a8a, #3b82f6, #8b5cf6, #ec4899, #f59e0b);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+        @keyframes gradientShift {
+            0%   { background-position: 0% 50%; }
+            50%  { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .pulse-glow {
+            animation: pulseGlow 2s ease-in-out infinite alternate;
+        }
+        @keyframes pulseGlow {
+            from { box-shadow: 0 0 20px rgba(59,130,246,0.5); }
+            to   { box-shadow: 0 0 30px rgba(59,130,246,0.8); }
+        }
+        .slide-in {
+            animation: slideIn 0.5s ease-out;
+        }
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to   { transform: translateY(0);    opacity: 1; }
+        }
+        .auth-input {
+            width: 100%;
+            padding: 12px 16px 12px 44px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            color: white;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.3s, background 0.3s;
+            box-sizing: border-box;
+        }
+        .auth-input::placeholder { color: rgba(255,255,255,0.4); }
+        .auth-input:focus {
+            border-color: rgba(99,102,241,0.8);
+            background: rgba(255,255,255,0.15);
+        }
+        /* select styling to match inputs */
+        select.auth-input {
+            padding-left: 44px;
+            appearance: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+        .tab-active {
+            background: rgba(255,255,255,0.2);
+            border-bottom: 2px solid white;
+            color: white !important;
+        }
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-secondary {
+            width: 100%;
+            padding: 12px;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 12px;
+            color: rgba(255,255,255,0.7);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        .alert-error {
+            background: rgba(239,68,68,0.2);
+            border: 1px solid rgba(239,68,68,0.4);
+            color: #fca5a5;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+        .alert-success {
+            background: rgba(16,185,129,0.2);
+            border: 1px solid rgba(16,185,129,0.4);
+            color: #6ee7b7;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+        .alert-warning {
+            background: rgba(245,158,11,0.2);
+            border: 1px solid rgba(245,158,11,0.4);
+            color: #fcd34d;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+        .strength-bar {
+            height: 4px;
+            border-radius: 2px;
+            transition: width 0.4s ease;
+            width: 0%;
+        }
+        .req {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: rgba(255,255,255,0.45);
+            transition: color 0.3s;
+        }
+        .req.met { color: #6ee7b7; }
+        .req-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.25);
+            flex-shrink: 0;
+            transition: background 0.3s;
+        }
+        .req.met .req-dot { background: #10b981; }
+        .eye-btn {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.45);
+            cursor: pointer;
+            font-size: 14px;
+            padding: 0;
+        }
+        .eye-btn:hover { color: white; }
+
+        /* Forgot Password wizard steps */
+        .fp-step { display: none; }
+        .fp-step.active { display: block; }
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .step-dot {
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.4);
+            font-size: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        .step-dot.done  { background: #10b981; color: white; }
+        .step-dot.active { background: #3b82f6; color: white; }
+        .step-line {
+            flex: 1; max-width: 40px;
+            height: 2px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 1px;
+            transition: background 0.3s;
+        }
+        .step-line.done { background: #10b981; }
+    </style>
+</head>
+
+<body class="min-h-screen dna-animation flex flex-col">
+
+    <!-- Navigation bar -->
+    <nav class="glass-effect p-5">
+        <div class="container mx-auto flex items-center space-x-3">
+            <div class="w-11 h-11 bg-white rounded-2xl flex items-center justify-center pulse-glow">
+                <i class="fas fa-dna text-blue-600 text-lg"></i>
+            </div>
+            <div>
+                <h1 class="text-white font-bold text-xl">GenoRisk AI</h1>
+                <p class="text-blue-200 text-xs">Advanced Genomic Analysis Platform</p>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main content area -->
+    <div class="flex-1 flex items-center justify-center px-4 py-10">
+        <div class="w-full max-w-md slide-in">
+
+            <!-- ═══════════ MAIN AUTH CARD ═══════════ -->
+            <div id="mainCard" class="glass-effect rounded-3xl p-8">
+
+                <!-- Lock icon + title -->
+                <div class="text-center mb-6">
+                    <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-3 pulse-glow">
+                        <i class="fas fa-shield-alt text-white text-2xl"></i>
+                    </div>
+                    <h2 class="text-white font-bold text-2xl">Secure Access</h2>
+                    <p class="text-blue-200 text-sm mt-1">Authentication-Based Credential Security</p>
+                </div>
+
+                <!-- Tab switcher -->
+                <div class="flex mb-6 border-b border-white/20">
+                    <button id="loginTabBtn" onclick="showTab('login')"
+                        class="tab-active flex-1 py-3 text-white font-semibold text-sm transition-all duration-200">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Login
+                    </button>
+                    <button id="registerTabBtn" onclick="showTab('register')"
+                        class="flex-1 py-3 text-white/50 font-semibold text-sm transition-all duration-200 hover:text-white">
+                        <i class="fas fa-user-plus mr-2"></i>Create Account
+                    </button>
+                </div>
+
+                <!-- ═══════════ LOGIN PANEL ═══════════ -->
+                <div id="loginPanel">
+
+                    {% if error %}
+                    <div class="alert-error">
+                        <i class="fas fa-exclamation-circle mr-2"></i>{{ error }}
+                    </div>
+                    {% endif %}
+                    {% if success %}
+                    <div class="alert-success">
+                        <i class="fas fa-check-circle mr-2"></i>{{ success }}
+                    </div>
+                    {% endif %}
+
+                    <form method="POST" action="/login" class="space-y-5">
+                        <div>
+                            <label class="text-white text-sm font-medium mb-2 block">Username</label>
+                            <div class="relative">
+                                <i class="fas fa-user absolute left-3 top-1/2 -translate-y-1/2 text-white/35 text-sm pointer-events-none"></i>
+                                <input type="text" name="username" class="auth-input"
+                                    placeholder="Enter your username" required autocomplete="username">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-white text-sm font-medium mb-2 block">Password</label>
+                            <div class="relative">
+                                <i class="fas fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-white/35 text-sm pointer-events-none"></i>
+                                <input type="password" name="password" id="loginPassword" class="auth-input"
+                                    placeholder="Enter your password" required autocomplete="current-password">
+                                <button type="button" class="eye-btn" onclick="toggleEye('loginPassword', this)">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-sign-in-alt mr-2"></i>Login to GenoRisk AI
+                        </button>
+                    </form>
+
+                    <!-- Forgot Password link -->
+                    <div class="text-center mt-4">
+                        <button onclick="showForgotPassword()"
+                            class="text-yellow-300 hover:text-white text-sm font-medium transition-colors">
+                            <i class="fas fa-key mr-1"></i>Forgot Password?
+                        </button>
+                    </div>
+
+                    <p class="text-center text-white/40 text-sm mt-4">
+                        Don't have an account?
+                        <button onclick="showTab('register')"
+                            class="text-blue-300 hover:text-white font-semibold transition-colors ml-1">
+                            Create one here
+                        </button>
+                    </p>
+                </div>
+
+                <!-- ═══════════ REGISTER PANEL ═══════════ -->
+                <!-- BUG FIX #2: Added security_question + security_answer fields -->
+                <!-- and fixed submitRegister() to send them to the server         -->
+                <div id="registerPanel" class="hidden">
+
+                    <div id="regAlert" class="hidden"></div>
+
+                    <div class="space-y-4">
+                        <!-- Username -->
+                        <div>
+                            <label class="text-white text-sm font-medium mb-2 block">Choose Username</label>
+                            <div class="relative">
+                                <i class="fas fa-user absolute left-3 top-1/2 -translate-y-1/2 text-white/35 text-sm pointer-events-none"></i>
+                                <input type="text" id="regUsername" class="auth-input"
+                                    placeholder="At least 3 characters" autocomplete="off">
+                            </div>
+                        </div>
+
+                        <!-- Password with live strength checker -->
+                        <div>
+                            <label class="text-white text-sm font-medium mb-2 block">Create Password</label>
+                            <div class="relative">
+                                <i class="fas fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-white/35 text-sm pointer-events-none"></i>
+                                <input type="password" id="regPassword" class="auth-input"
+                                    placeholder="Create a strong password"
+                                    oninput="checkStrength(this.value)"
+                                    autocomplete="new-password">
+                                <button type="button" class="eye-btn" onclick="toggleEye('regPassword', this)">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+
+                            <!-- Strength bar -->
+                            <div class="mt-2 flex items-center gap-3">
+                                <div class="flex-1 bg-white/10 rounded-full h-1">
+                                    <div id="strengthBar" class="strength-bar bg-red-400 rounded-full"></div>
+                                </div>
+                                <span id="strengthLabel" class="text-xs text-white/40 w-12 text-right">—</span>
+                            </div>
+
+                            <!-- Live requirement checklist -->
+                            <div class="mt-3 grid grid-cols-2 gap-y-2 gap-x-3">
+                                <div class="req" id="req-len"><span class="req-dot"></span>Min. 8 characters</div>
+                                <div class="req" id="req-upper"><span class="req-dot"></span>Uppercase letter</div>
+                                <div class="req" id="req-num"><span class="req-dot"></span>One number</div>
+                                <div class="req" id="req-special"><span class="req-dot"></span>Special character</div>
+                            </div>
+                        </div>
+
+                        <!-- Confirm password -->
+                        <div>
+                            <label class="text-white text-sm font-medium mb-2 block">Confirm Password</label>
+                            <div class="relative">
+                                <i class="fas fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-white/35 text-sm pointer-events-none"></i>
+                                <input type="password" id="regConfirm" class="auth-input"
+                                    placeholder="Re-enter your password"
+                                    oninput="checkMatch()"
+                                    autocomplete="new-password">
+                                <button type="button" class="eye-btn" onclick="toggleEye('regConfirm', this)">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <p id="matchMsg" class="text-xs mt-1 hidden"></p>
+                        </div>
+
+                        <!-- ── Security Question (for Forgot Password) ── -->
+                        <div class="pt-2 border-t border-white/10">
+                            <p class="text-white/50 text-xs mb-3">
+                                <i class="fas fa-shield-alt mr-1 text-yellow-400"></i>
+                                Account Recovery — set a security question in case you forget your password.
+                            </p>
+                            <label class="text-white text-sm font-medium mb-2 block">Security Question</label>
+                            <div class="relative">
+                                <i class="fas fa-question-circle absolute left-3 top-1/2 -translate-y-1/2 text-white/35 text-sm pointer-events-none"></i>
+                                <select id="regSecQuestion" class="auth-input">
+                                    <option value="" disabled selected style="background:#1e3a8a;">— Choose a question —</option>
+                                    <option value="What was the name of your first pet?" style="background:#1e3a8a;">What was the name of your first pet?</option>
+                                    <option value="What city were you born in?" style="background:#1e3a8a;">What city were you born in?</option>
+                                    <option value="What is your mother's maiden name?" style="background:#1e3a8a;">What is your mother's maiden name?</option>
+                                    <option value="What was the name of your primary school?" style="background:#1e3a8a;">What was the name of your primary school?</option>
+                                    <option value="What is the name of your favourite childhood friend?" style="background:#1e3a8a;">What is the name of your favourite childhood friend?</option>
+                                    <option value="What street did you grow up on?" style="background:#1e3a8a;">What street did you grow up on?</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="text-white text-sm font-medium mb-2 block">Your Answer</label>
+                            <div class="relative">
+                                <i class="fas fa-comment-dots absolute left-3 top-1/2 -translate-y-1/2 text-white/35 text-sm pointer-events-none"></i>
+                                <input type="text" id="regSecAnswer" class="auth-input"
+                                    placeholder="Your answer (case-insensitive)" autocomplete="off">
+                            </div>
+                            <p class="text-white/30 text-xs mt-1">
+                                <i class="fas fa-info-circle mr-1"></i>Answer is hashed and stored securely.
+                            </p>
+                        </div>
+                        <!-- ── End Security Question ── -->
+
+                        <button onclick="submitRegister()" class="btn-primary">
+                            <i class="fas fa-user-plus mr-2"></i>Create My Account
+                        </button>
+                    </div>
+
+                    <p class="text-center text-white/40 text-sm mt-5">
+                        Already have an account?
+                        <button onclick="showTab('login')"
+                            class="text-blue-300 hover:text-white font-semibold transition-colors ml-1">
+                            Login here
+                        </button>
+                    </p>
+                </div>
+
+            </div><!-- end mainCard -->
+
+
+            <!-- ═══════════ FORGOT PASSWORD CARD ═══════════ -->
+            <div id="forgotCard" class="glass-effect rounded-3xl p-8 hidden">
+
+                <!-- Header -->
+                <div class="text-center mb-6">
+                    <div class="w-16 h-16 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-3 pulse-glow">
+                        <i class="fas fa-key text-white text-2xl"></i>
+                    </div>
+                    <h2 class="text-white font-bold text-2xl">Forgot Password</h2>
+                    <p class="text-yellow-200 text-sm mt-1">Reset your account credentials securely</p>
+                </div>
+
+                <!-- 3-step progress indicator -->
+                <div class="step-indicator">
+                    <div class="step-dot active" id="sd1">1</div>
+                    <div class="step-line" id="sl1"></div>
+                    <div class="step-dot" id="sd2">2</div>
+                    <div class="step-line" id="sl2"></div>
+                    <div class="step-dot" id="sd3">3</div>
+                </div>
+                <div class="flex justify-between text-white/30 text-xs mb-6 px-1">
+                    <span>Identify</span>
+                    <span>Verify</span>
+                    <span>Reset</span>
+                </div>
+
+                <div id="fpAlert" class="hidden"></div>
+
+                <!-- Step 1: Enter Username -->
+                <div class="fp-step active" id="fpStep1">
+                    <p class="text-white/60 text-sm mb-5">
+                        Enter your username and we'll ask you your security question.
+                    </p>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-white text-sm font-medium mb-2 block">Username</label>
+                            <div class="relative">
+                                <i class="fas fa-user absolute left-3 top-1/2 -translate-y-1/2 text-white/35 text-sm pointer-events-none"></i>
+                                <input type="text" id="fpUsername" class="auth-input"
+                                    placeholder="Enter your username" autocomplete="username">
+                            </div>
+                        </div>
+                        <button onclick="fpGetQuestion()" class="btn-primary">
+                            <i class="fas fa-arrow-right mr-2"></i>Continue
+                        </button>
+                        <button onclick="showMainCard()" class="btn-secondary">
+                            <i class="fas fa-arrow-left mr-2"></i>Back to Login
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Answer Security Question -->
+                <div class="fp-step" id="fpStep2">
+                    <p class="text-white/60 text-sm mb-2">Answer your security question to verify your identity.</p>
+                    <div class="glass-effect rounded-xl p-3 mb-5">
+                        <p class="text-xs text-white/40 mb-1"><i class="fas fa-question-circle mr-1"></i>Your security question:</p>
+                        <p id="fpQuestionText" class="text-white text-sm font-medium"></p>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-white text-sm font-medium mb-2 block">Your Answer</label>
+                            <div class="relative">
+                                <i class="fas fa-comment-dots absolute left-3 top-1/2 -translate-y-1/2 text-white/35 text-sm pointer-events-none"></i>
+                                <input type="text" id="fpAnswer" class="auth-input"
+                                    placeholder="Type your answer" autocomplete="off">
+                            </div>
+                        </div>
+                        <button onclick="fpVerifyAnswer()" class="btn-primary">
+                            <i class="fas fa-check mr-2"></i>Verify Answer
+                        </button>
+                        <button onclick="fpGoToStep(1)" class="btn-secondary">
+                            <i class="fas fa-arrow-left mr-2"></i>Back
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Set New Password -->
+                <div class="fp-step" id="fpStep3">
+                    <p class="text-white/60 text-sm mb-5">
+                        <i class="fas fa-check-circle text-green-400 mr-1"></i>
+                        Identity verified! Choose a new strong password.
+                    </p>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-white text-sm font-medium mb-2 block">New Password</label>
+                            <div class="relative">
+                                <i class="fas fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-white/35 text-sm pointer-events-none"></i>
+                                <input type="password" id="fpNewPassword" class="auth-input"
+                                    placeholder="New strong password"
+                                    oninput="checkFpStrength(this.value)"
+                                    autocomplete="new-password">
+                                <button type="button" class="eye-btn" onclick="toggleEye('fpNewPassword', this)">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="mt-2 flex items-center gap-3">
+                                <div class="flex-1 bg-white/10 rounded-full h-1">
+                                    <div id="fpStrengthBar" class="strength-bar bg-red-400 rounded-full"></div>
+                                </div>
+                                <span id="fpStrengthLabel" class="text-xs text-white/40 w-12 text-right">—</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-white text-sm font-medium mb-2 block">Confirm New Password</label>
+                            <div class="relative">
+                                <i class="fas fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-white/35 text-sm pointer-events-none"></i>
+                                <input type="password" id="fpConfirmPassword" class="auth-input"
+                                    placeholder="Re-enter new password"
+                                    oninput="checkFpMatch()"
+                                    autocomplete="new-password">
+                                <button type="button" class="eye-btn" onclick="toggleEye('fpConfirmPassword', this)">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <p id="fpMatchMsg" class="text-xs mt-1 hidden"></p>
+                        </div>
+                        <button onclick="fpResetPassword()" class="btn-primary">
+                            <i class="fas fa-save mr-2"></i>Save New Password
+                        </button>
+                    </div>
+                </div>
+
+            </div><!-- end forgotCard -->
+
+
+            <!-- Security note at bottom -->
+            <p class="text-center text-white/30 text-xs mt-5">
+                <i class="fas fa-shield-alt mr-1"></i>
+                Passwords hashed with PBKDF2-SHA256 · Security answers hashed · Never stored in plain text
+            </p>
+
+        </div>
+    </div>
+
+    <script>
+        // ─────────────────────────────────────────────────
+        // Tab switching (Login ↔ Register)
+        // ─────────────────────────────────────────────────
+        function showTab(tab) {
+            const isLogin = (tab === 'login');
+            document.getElementById('loginPanel').classList.toggle('hidden', !isLogin);
+            document.getElementById('registerPanel').classList.toggle('hidden', isLogin);
+            document.getElementById('loginTabBtn').classList.toggle('tab-active', isLogin);
+            document.getElementById('loginTabBtn').classList.toggle('text-white/50', !isLogin);
+            document.getElementById('registerTabBtn').classList.toggle('tab-active', !isLogin);
+            document.getElementById('registerTabBtn').classList.toggle('text-white/50', isLogin);
+        }
+
+        // Show / hide Forgot Password card
+        function showForgotPassword() {
+            document.getElementById('mainCard').classList.add('hidden');
+            document.getElementById('forgotCard').classList.remove('hidden');
+            fpGoToStep(1);
+            hideFpAlert();
+        }
+        function showMainCard() {
+            document.getElementById('forgotCard').classList.add('hidden');
+            document.getElementById('mainCard').classList.remove('hidden');
+        }
+
+        // Show or hide password when eye icon is clicked
+        function toggleEye(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon  = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+
+        // ─────────────────────────────────────────────────
+        // Password strength checker (shared logic)
+        // ─────────────────────────────────────────────────
+        function _strengthScore(val) {
+            return {
+                len:     val.length >= 8,
+                upper:   /[A-Z]/.test(val),
+                num:     /[0-9]/.test(val),
+                special: /[!@#$%^&*()\-_=+\[\]{};:'",.<>?\/\\|`~]/.test(val)
+            };
+        }
+        const LEVELS = [
+            { pct: '0%',   color: 'bg-red-400',    textColor: 'text-red-400',    label: '—'      },
+            { pct: '25%',  color: 'bg-red-400',    textColor: 'text-red-400',    label: 'Weak'   },
+            { pct: '50%',  color: 'bg-yellow-400', textColor: 'text-yellow-400', label: 'Fair'   },
+            { pct: '75%',  color: 'bg-blue-400',   textColor: 'text-blue-400',   label: 'Good'   },
+            { pct: '100%', color: 'bg-green-400',  textColor: 'text-green-400',  label: 'Strong' },
+        ];
+
+        function checkStrength(val) {
+            const rules = _strengthScore(val);
+            Object.entries(rules).forEach(([key, met]) => {
+                document.getElementById('req-' + key).classList.toggle('met', met);
+            });
+            const score = Object.values(rules).filter(Boolean).length;
+            const lvl   = val.length === 0 ? LEVELS[0] : LEVELS[score];
+            const bar   = document.getElementById('strengthBar');
+            bar.style.width = lvl.pct;
+            bar.className   = `strength-bar rounded-full ${lvl.color}`;
+            const lbl = document.getElementById('strengthLabel');
+            lbl.textContent = lvl.label;
+            lbl.className   = `text-xs w-12 text-right ${lvl.textColor}`;
+        }
+        function checkFpStrength(val) {
+            const score = Object.values(_strengthScore(val)).filter(Boolean).length;
+            const lvl   = val.length === 0 ? LEVELS[0] : LEVELS[score];
+            const bar   = document.getElementById('fpStrengthBar');
+            bar.style.width = lvl.pct;
+            bar.className   = `strength-bar rounded-full ${lvl.color}`;
+            const lbl = document.getElementById('fpStrengthLabel');
+            lbl.textContent = lvl.label;
+            lbl.className   = `text-xs w-12 text-right ${lvl.textColor}`;
+        }
+
+        // Live confirm password match check (registration)
+        function checkMatch() {
+            const pw  = document.getElementById('regPassword').value;
+            const cfm = document.getElementById('regConfirm').value;
+            const msg = document.getElementById('matchMsg');
+            if (!cfm) { msg.classList.add('hidden'); return; }
+            if (pw === cfm) {
+                msg.textContent = '✓ Passwords match';
+                msg.className   = 'text-xs mt-1 text-green-400';
+            } else {
+                msg.textContent = '✗ Passwords do not match';
+                msg.className   = 'text-xs mt-1 text-red-400';
+            }
+            msg.classList.remove('hidden');
+        }
+        function checkFpMatch() {
+            const pw  = document.getElementById('fpNewPassword').value;
+            const cfm = document.getElementById('fpConfirmPassword').value;
+            const msg = document.getElementById('fpMatchMsg');
+            if (!cfm) { msg.classList.add('hidden'); return; }
+            if (pw === cfm) {
+                msg.textContent = '✓ Passwords match';
+                msg.className   = 'text-xs mt-1 text-green-400';
+            } else {
+                msg.textContent = '✗ Passwords do not match';
+                msg.className   = 'text-xs mt-1 text-red-400';
+            }
+            msg.classList.remove('hidden');
+        }
+
+        // ─────────────────────────────────────────────────
+        // Alert helpers
+        // ─────────────────────────────────────────────────
+        function showRegAlert(msg, type) {
+            const el = document.getElementById('regAlert');
+            el.className = type === 'error' ? 'alert-error' : (type === 'warning' ? 'alert-warning' : 'alert-success');
+            el.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'check-circle'} mr-2"></i>${msg}`;
+            el.classList.remove('hidden');
+        }
+        function showFpAlert(msg, type) {
+            const el = document.getElementById('fpAlert');
+            el.className = type === 'error' ? 'alert-error' : (type === 'warning' ? 'alert-warning' : 'alert-success');
+            el.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'check-circle'} mr-2"></i>${msg}`;
+            el.classList.remove('hidden');
+        }
+        function hideFpAlert() {
+            document.getElementById('fpAlert').classList.add('hidden');
+        }
+
+        // ─────────────────────────────────────────────────
+        // Register — FIXED: now sends security_question + security_answer
+        // (BUG FIX #2)
+        // ─────────────────────────────────────────────────
+        async function submitRegister() {
+            const username  = document.getElementById('regUsername').value.trim();
+            const password  = document.getElementById('regPassword').value;
+            const confirm   = document.getElementById('regConfirm').value;
+            const secQ      = document.getElementById('regSecQuestion').value;
+            const secA      = document.getElementById('regSecAnswer').value.trim();
+
+            // Client-side validation
+            if (!username)           { showRegAlert('Please enter a username.', 'error'); return; }
+            if (username.length < 3) { showRegAlert('Username must be at least 3 characters.', 'error'); return; }
+            if (password.length < 8) { showRegAlert('Password must be at least 8 characters.', 'error'); return; }
+            if (!/[A-Z]/.test(password))    { showRegAlert('Password must include an uppercase letter.', 'error'); return; }
+            if (!/[0-9]/.test(password))    { showRegAlert('Password must include a number.', 'error'); return; }
+            if (!/[!@#$%^&*()\-_=+\[\]{};:'",.<>?\/\\|`~]/.test(password)) {
+                showRegAlert('Password must include a special character (!@#$ etc).', 'error'); return;
+            }
+            if (password !== confirm) { showRegAlert('Passwords do not match.', 'error'); return; }
+            if (!secQ) { showRegAlert('Please choose a security question.', 'error'); return; }
+            if (!secA) { showRegAlert('Please provide an answer to your security question.', 'error'); return; }
+
+            try {
+                const res  = await fetch('/register', {
+                    method:  'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    // ✅ FIX: now includes security_question and security_answer
+                    body:    JSON.stringify({
+                        username:          username,
+                        password:          password,
+                        security_question: secQ,
+                        security_answer:   secA
+                    })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    showRegAlert('Account created! Switching to login…', 'success');
+                    setTimeout(() => {
+                        showTab('login');
+                        document.getElementById('regUsername').value   = '';
+                        document.getElementById('regPassword').value   = '';
+                        document.getElementById('regConfirm').value    = '';
+                        document.getElementById('regSecQuestion').value = '';
+                        document.getElementById('regSecAnswer').value  = '';
+                        document.getElementById('regAlert').classList.add('hidden');
+                        checkStrength('');
+                    }, 2000);
+                } else {
+                    showRegAlert(data.message || 'Registration failed.', 'error');
+                }
+            } catch (err) {
+                showRegAlert('Cannot connect to server. Please try again.', 'error');
+            }
+        }
+
+        // ─────────────────────────────────────────────────
+        // Forgot Password — 3-step wizard
+        // ─────────────────────────────────────────────────
+        let fpVerifiedUsername = null;   // stores username once identity is confirmed
+
+        function fpGoToStep(n) {
+            document.querySelectorAll('.fp-step').forEach((el, i) => {
+                el.classList.toggle('active', i + 1 === n);
+            });
+            // Update step indicators
+            for (let i = 1; i <= 3; i++) {
+                const dot  = document.getElementById('sd' + i);
+                const line = document.getElementById('sl' + i);
+                if (i < n)       { dot.className  = 'step-dot done';   if (line) line.className = 'step-line done'; }
+                else if (i === n){ dot.className  = 'step-dot active'; }
+                else             { dot.className  = 'step-dot';        if (line) line.className = 'step-line'; }
+            }
+            hideFpAlert();
+        }
+
+        // Step 1 → fetch security question
+        async function fpGetQuestion() {
+            const username = document.getElementById('fpUsername').value.trim();
+            if (!username) { showFpAlert('Please enter your username.', 'error'); return; }
+            try {
+                const res  = await fetch('/forgot/get-question', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('fpQuestionText').textContent = data.question;
+                    fpVerifiedUsername = username;
+                    fpGoToStep(2);
+                } else {
+                    showFpAlert('Username not found. Please check and try again.', 'error');
+                }
+            } catch {
+                showFpAlert('Cannot connect to server. Please try again.', 'error');
+            }
+        }
+
+        // Step 2 → verify security answer
+        async function fpVerifyAnswer() {
+            const answer = document.getElementById('fpAnswer').value.trim();
+            if (!answer) { showFpAlert('Please enter your answer.', 'error'); return; }
+            try {
+                const res  = await fetch('/forgot/verify-answer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: fpVerifiedUsername, answer })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    fpGoToStep(3);
+                } else {
+                    showFpAlert('Incorrect answer. Please try again.', 'error');
+                }
+            } catch {
+                showFpAlert('Cannot connect to server. Please try again.', 'error');
+            }
+        }
+
+        // Step 3 → reset password
+        async function fpResetPassword() {
+            const newPw  = document.getElementById('fpNewPassword').value;
+            const confirm = document.getElementById('fpConfirmPassword').value;
+
+            if (newPw.length < 8)               { showFpAlert('Password must be at least 8 characters.', 'error'); return; }
+            if (!/[A-Z]/.test(newPw))           { showFpAlert('Password must include an uppercase letter.', 'error'); return; }
+            if (!/[0-9]/.test(newPw))           { showFpAlert('Password must include a number.', 'error'); return; }
+            if (!/[!@#$%^&*()\-_=+\[\]{};:'",.<>?\/\\|`~]/.test(newPw)) {
+                showFpAlert('Password must include a special character.', 'error'); return;
+            }
+            if (newPw !== confirm) { showFpAlert('Passwords do not match.', 'error'); return; }
+
+            try {
+                const res  = await fetch('/forgot/reset-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: fpVerifiedUsername, new_password: newPw })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showFpAlert('Password reset successfully! Redirecting to login…', 'success');
+                    setTimeout(() => {
+                        showMainCard();
+                        document.getElementById('fpUsername').value         = '';
+                        document.getElementById('fpAnswer').value           = '';
+                        document.getElementById('fpNewPassword').value      = '';
+                        document.getElementById('fpConfirmPassword').value  = '';
+                        fpVerifiedUsername = null;
+                    }, 2500);
+                } else {
+                    showFpAlert(data.message || 'Reset failed. Please try again.', 'error');
+                }
+            } catch {
+                showFpAlert('Cannot connect to server. Please try again.', 'error');
+            }
+        }
+
+        // If URL has ?tab=register, open register tab directly
+        if (new URLSearchParams(window.location.search).get('tab') === 'register') {
+            showTab('register');
+        }
+    </script>
+</body>
+</html>
